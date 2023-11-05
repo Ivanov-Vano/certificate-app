@@ -32,23 +32,14 @@ class RolesAndPermissionsSeeder extends Seeder
         $certificatePermission6 = Permission::create(['name' => 'восстановление: сертификат']);
         $certificatePermission7 = Permission::create(['name' => 'безвозвратное удаление: сертификат']);
 
-        //Attachment model
-        $attachmentPermission1 = Permission::create(['name' => 'просмотр всех: приложение']);
-        $attachmentPermission2 = Permission::create(['name' => 'просмотр: приложение']);
-        $attachmentPermission3 = Permission::create(['name' => 'создание: приложение']);
-        $attachmentPermission4 = Permission::create(['name' => 'изменение: приложение']);
-        $attachmentPermission5 = Permission::create(['name' => 'удаление: приложение']);
-        $attachmentPermission6 = Permission::create(['name' => 'восстановление: приложение']);
-        $attachmentPermission7 = Permission::create(['name' => 'безвозвратное удаление: приложение']);
-
-        //CodeGroup model
-        $codeGroupPermission1 = Permission::create(['name' => 'просмотр всех: правило']);
-        $codeGroupPermission2 = Permission::create(['name' => 'просмотр: правило']);
-        $codeGroupPermission3 = Permission::create(['name' => 'создание: правило']);
-        $codeGroupPermission4 = Permission::create(['name' => 'изменение: правило']);
-        $codeGroupPermission5 = Permission::create(['name' => 'удаление: правило']);
-        $codeGroupPermission6 = Permission::create(['name' => 'восстановление: правило']);
-        $codeGroupPermission7 = Permission::create(['name' => 'безвозвратное удаление: правило']);
+        //Chamber model
+        $chamberPermission1 = Permission::create(['name' => 'просмотр всех: палата']);
+        $chamberPermission2 = Permission::create(['name' => 'просмотр: палата']);
+        $chamberPermission3 = Permission::create(['name' => 'создание: палата']);
+        $chamberPermission4 = Permission::create(['name' => 'изменение: палата']);
+        $chamberPermission5 = Permission::create(['name' => 'удаление: палата']);
+        $chamberPermission6 = Permission::create(['name' => 'восстановление: палата']);
+        $chamberPermission7 = Permission::create(['name' => 'безвозвратное удаление: палата']);
 
         //Company model
         $companyPermission1 = Permission::create(['name' => 'просмотр всех: компания']);
@@ -68,15 +59,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $expertPermission6 = Permission::create(['name' => 'восстановление: эксперт']);
         $expertPermission7 = Permission::create(['name' => 'безвозвратное удаление: эксперт']);
 
-        //Measure model
-        $measurePermission1 = Permission::create(['name' => 'просмотр всех: единица измерения']);
-        $measurePermission2 = Permission::create(['name' => 'просмотр: единица измерения']);
-        $measurePermission3 = Permission::create(['name' => 'создание: единица измерения']);
-        $measurePermission4 = Permission::create(['name' => 'изменение: единица измерения']);
-        $measurePermission5 = Permission::create(['name' => 'удаление: единица измерения']);
-        $measurePermission6 = Permission::create(['name' => 'восстановление: единица измерения']);
-        $measurePermission7 = Permission::create(['name' => 'безвозвратное удаление: единица измерения']);
-
         //Organization model
         $organizationPermission1 = Permission::create(['name' => 'просмотр всех: организация']);
         $organizationPermission2 = Permission::create(['name' => 'просмотр: организация']);
@@ -86,41 +68,15 @@ class RolesAndPermissionsSeeder extends Seeder
         $organizationPermission6 = Permission::create(['name' => 'восстановление: организация']);
         $organizationPermission7 = Permission::create(['name' => 'безвозвратное удаление: организация']);
 
-        //Position model
-        $positionPermission1 = Permission::create(['name' => 'просмотр всех: товарная позиция']);
-        $positionPermission2 = Permission::create(['name' => 'просмотр: товарная позиция']);
-        $positionPermission3 = Permission::create(['name' => 'создание: товарная позиция']);
-        $positionPermission4 = Permission::create(['name' => 'изменение: товарная позиция']);
-        $positionPermission5 = Permission::create(['name' => 'удаление: товарная позиция']);
-        $positionPermission6 = Permission::create(['name' => 'восстановление: товарная позиция']);
-        $positionPermission7 = Permission::create(['name' => 'безвозвратное удаление: товарная позиция']);
+        //Type model
+        $typePermission1 = Permission::create(['name' => 'просмотр всех: тип сертификата']);
+        $typePermission2 = Permission::create(['name' => 'просмотр: тип сертификата']);
+        $typePermission3 = Permission::create(['name' => 'создание: тип сертификата']);
+        $typePermission4 = Permission::create(['name' => 'изменение: тип сертификата']);
+        $typePermission5 = Permission::create(['name' => 'удаление: тип сертификата']);
+        $typePermission6 = Permission::create(['name' => 'восстановление: тип сертификата']);
+        $typePermission7 = Permission::create(['name' => 'безвозвратное удаление: тип сертификата']);
 
-        //Product model
-        $productPermission1 = Permission::create(['name' => 'просмотр всех: товар']);
-        $productPermission2 = Permission::create(['name' => 'просмотр: товар']);
-        $productPermission3 = Permission::create(['name' => 'создание: товар']);
-        $productPermission4 = Permission::create(['name' => 'изменение: товар']);
-        $productPermission5 = Permission::create(['name' => 'удаление: товар']);
-        $productPermission6 = Permission::create(['name' => 'восстановление: товар']);
-        $productPermission7 = Permission::create(['name' => 'безвозвратное удаление: товар']);
-
-        //Subposition model
-        $subpositionPermission1 = Permission::create(['name' => 'просмотр всех: товарная подпозиция']);
-        $subpositionPermission2 = Permission::create(['name' => 'просмотр: товарная подпозиция']);
-        $subpositionPermission3 = Permission::create(['name' => 'создание: товарная подпозиция']);
-        $subpositionPermission4 = Permission::create(['name' => 'изменение: товарная подпозиция']);
-        $subpositionPermission5 = Permission::create(['name' => 'удаление: товарная подпозиция']);
-        $subpositionPermission6 = Permission::create(['name' => 'восстановление: товарная подпозиция']);
-        $subpositionPermission7 = Permission::create(['name' => 'безвозвратное удаление: товарная подпозиция']);
-
-        //TypeAct model
-        $typeActPermission1 = Permission::create(['name' => 'просмотр всех: тип акта']);
-        $typeActPermission2 = Permission::create(['name' => 'просмотр: тип акта']);
-        $typeActPermission3 = Permission::create(['name' => 'создание: тип акта']);
-        $typeActPermission4 = Permission::create(['name' => 'изменение: тип акта']);
-        $typeActPermission5 = Permission::create(['name' => 'удаление: тип акта']);
-        $typeActPermission6 = Permission::create(['name' => 'восстановление: тип акта']);
-        $typeActPermission7 = Permission::create(['name' => 'безвозвратное удаление: тип акта']);
 
         //CREATE ROLES (создание ролей)
         $userRole = Role::create(['name' => 'Эксперт'])->syncPermissions([
@@ -139,25 +95,18 @@ class RolesAndPermissionsSeeder extends Seeder
             $companyPermission3,
             $companyPermission4,
             $companyPermission5,
-            $measurePermission1,
-            $measurePermission2,
-            $measurePermission3,
-            $measurePermission4,
-            $measurePermission5,
-            $attachmentPermission1,
-            $attachmentPermission2,
-            $attachmentPermission3,
-            $attachmentPermission4,
-            $attachmentPermission5,
-            $attachmentPermission6,
-            $attachmentPermission7,
-            $productPermission1,
-            $productPermission2,
-            $productPermission3,
-            $productPermission4,
-            $productPermission5,
-            $productPermission6,
-            $productPermission7,
+            $typePermission1,
+            $typePermission2,
+            $typePermission3,
+            $typePermission4,
+            $typePermission5,
+            $chamberPermission1,
+            $chamberPermission2,
+            $chamberPermission3,
+            $chamberPermission4,
+            $chamberPermission5,
+            $chamberPermission6,
+            $chamberPermission7,
         ]);
         $chiefRole = Role::create(['name' => 'Руководитель'])->syncPermissions([
             $certificatePermission1,
@@ -167,21 +116,13 @@ class RolesAndPermissionsSeeder extends Seeder
             $certificatePermission5,
             $certificatePermission6,
             $certificatePermission7,
-            $certificatePermission1,
-            $attachmentPermission1,
-            $attachmentPermission2,
-            $attachmentPermission3,
-            $attachmentPermission4,
-            $attachmentPermission5,
-            $attachmentPermission6,
-            $attachmentPermission7,
-            $codeGroupPermission1,
-            $codeGroupPermission2,
-            $codeGroupPermission3,
-            $codeGroupPermission4,
-            $codeGroupPermission5,
-            $codeGroupPermission6,
-            $codeGroupPermission7,
+            $chamberPermission1,
+            $chamberPermission2,
+            $chamberPermission3,
+            $chamberPermission4,
+            $chamberPermission5,
+            $chamberPermission6,
+            $chamberPermission7,
             $companyPermission1,
             $companyPermission2,
             $companyPermission3,
@@ -196,13 +137,13 @@ class RolesAndPermissionsSeeder extends Seeder
             $expertPermission5,
             $expertPermission6,
             $expertPermission7,
-            $measurePermission1,
-            $measurePermission2,
-            $measurePermission3,
-            $measurePermission4,
-            $measurePermission5,
-            $measurePermission6,
-            $measurePermission7,
+            $typePermission1,
+            $typePermission2,
+            $typePermission3,
+            $typePermission4,
+            $typePermission5,
+            $typePermission6,
+            $typePermission7,
             $organizationPermission1,
             $organizationPermission2,
             $organizationPermission3,
@@ -210,48 +151,22 @@ class RolesAndPermissionsSeeder extends Seeder
             $organizationPermission5,
             $organizationPermission6,
             $organizationPermission7,
-            $positionPermission1,
-            $positionPermission2,
-            $positionPermission3,
-            $positionPermission4,
-            $positionPermission5,
-            $positionPermission6,
-            $positionPermission7,
-            $productPermission1,
-            $productPermission2,
-            $productPermission3,
-            $productPermission4,
-            $productPermission5,
-            $productPermission6,
-            $productPermission7,
-            $subpositionPermission1,
-            $subpositionPermission2,
-            $subpositionPermission3,
-            $subpositionPermission4,
-            $subpositionPermission5,
-            $subpositionPermission6,
-            $subpositionPermission7,
-            $typeActPermission1,
-            $typeActPermission2,
-            $typeActPermission3,
-            $typeActPermission4,
-            $typeActPermission5,
-            $typeActPermission6,
-            $typeActPermission7,
         ]);
 
         User::create([
-            'username' => 'administrator',
             'email_verified_at' => now(),
             'password' => '$2y$10$R5vBPe6dfxDQevMtpH6pmetk3B0oyACoFU7RvLkz8EhUE4u99.r.O', // password 12345678
             'remember_token' => Str::random(10),
+            'is_admin' => '1',
+            'username' => 'administrator',
         ])->assignRole($chiefRole);
         for ($i=1; $i <2; $i++) {
             User::create([
-                'username' => 'пользователь'.$i,
                 'email_verified_at' => now(),
                 'password' => '$2y$10$R5vBPe6dfxDQevMtpH6pmetk3B0oyACoFU7RvLkz8EhUE4u99.r.O', // password 12345678
                 'remember_token' => Str::random(10),
+                'is_admin' => '0',
+                'username' => 'пользователь'.$i,
             ])->assignRole($userRole);
         }
 

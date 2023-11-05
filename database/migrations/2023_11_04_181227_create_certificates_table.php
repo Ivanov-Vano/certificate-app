@@ -18,11 +18,11 @@ return new class extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Type::class)->constrained()->nullOnDelete();
-            $table->foreignIdFor(Chamber::class)->constrained()->nullOnDelete();
-            $table->foreignIdFor(Organization::class)->constrained()->nullOnDelete();
-            $table->foreignIdFor(Company::class)->constrained()->nullOnDelete();
-            $table->foreignIdFor(Expert::class)->constrained()->nullOnDelete();
+            $table->foreignIdFor(Type::class)->constrained();
+            $table->foreignIdFor(Chamber::class)->constrained();
+            $table->foreignIdFor(Organization::class)->constrained();
+            $table->foreignIdFor(Company::class)->constrained();
+            $table->foreignIdFor(Expert::class)->constrained();
             $table->boolean('scan_issued')->nullable()->default(false);
             $table->boolean('invoice_issued')->nullable()->default(false);
             $table->boolean('paid')->nullable()->default(false);
