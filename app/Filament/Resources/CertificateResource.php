@@ -110,6 +110,9 @@ class CertificateResource extends Resource
                     ->relationship('expert', 'full_name')
                     ->required()
                     ->label('Эксперт ФИО'),
+                TextInput::make('extended_page')
+                    ->numeric()
+                    ->label('Дополнительные листы'),
                 Section::make('Статусы')
                     ->schema([
                         Toggle::make('scan_issued')
@@ -122,6 +125,7 @@ class CertificateResource extends Resource
                 DatePicker::make('date')
                     ->required()
                     ->label('Дата'),
+
             ]);
     }
 

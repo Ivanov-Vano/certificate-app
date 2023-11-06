@@ -20,7 +20,8 @@ class Certificate extends Model
         'scan_issued',
         'invoice_issued',
         'paid',
-        'date'
+        'date',
+        'extended_page'
     ];
 
     public function chamber():BelongsTo
