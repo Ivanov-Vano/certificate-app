@@ -6,9 +6,11 @@ use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
 use App\Models\Organization;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,23 +27,28 @@ class OrganizationResource extends Resource
 
     protected static ?string $navigationGroup = 'Справочники';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('short_name')
+                TextInput::make('short_name')
+                    ->label('Наименование')
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->label('Полное наименование')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('inn')
+                TextInput::make('inn')
+                    ->label('ИНН')
                     ->maxLength(50),
-                Forms\Components\TextInput::make('phone')
+                TextInput::make('phone')
+                    ->label('телефон')
                     ->tel()
                     ->maxLength(50),
-                Forms\Components\TextInput::make('address')
+                TextInput::make('address')
+                    ->label('адрес')
                     ->maxLength(255),
             ]);
     }
@@ -50,24 +57,28 @@ class OrganizationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('short_name')
+                TextColumn::make('short_name')
+                    ->label('Наименование')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
+                    ->label('Полное наименование')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('inn')
+                TextColumn::make('inn')
+                    ->label('ИНН')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
+                    ->label('Телефон')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('address')
+                    ->label('Адрес')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
+                    ->label('Создана')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
+                    ->label('Обновлена')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -90,7 +101,7 @@ class OrganizationResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ClientsRelationManager::class,
         ];
     }
 
