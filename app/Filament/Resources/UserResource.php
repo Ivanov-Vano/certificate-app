@@ -81,6 +81,9 @@ class UserResource extends Resource
                 TextColumn::make('username')
                     ->label('Имя пользователя'),
                 TextColumn::make('email'),
+                TextColumn::make('roles.name')
+                    ->badge()
+                    ->label('роли'),
                 TextColumn::make('email_verified_at')
                     ->dateTime(),
                 TextColumn::make('created_at')

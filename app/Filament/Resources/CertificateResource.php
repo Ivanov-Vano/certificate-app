@@ -37,7 +37,12 @@ class CertificateResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $user = auth()->user();
+        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            return static::getModel()::count();
+        }
+        return static::getEloquentQuery()
+            ->whereBelongsTo(auth()->user()->expert)->count();
     }
 
     public static function form(Form $form): Form
@@ -274,7 +279,16 @@ class CertificateResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        $user = auth()->user();
+
+        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            return parent::getEloquentQuery()
+                ->withoutGlobalScopes([
+                    SoftDeletingScope::class,
+                ]);
+        }
         return parent::getEloquentQuery()
+            ->whereBelongsTo(auth()->user()->expert)
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
