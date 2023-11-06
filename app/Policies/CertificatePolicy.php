@@ -13,8 +13,7 @@ class CertificatePolicy
      */
     public function viewAny(User $user): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('просмотр всех: сертификат');
     }
 
     /**
@@ -22,8 +21,7 @@ class CertificatePolicy
      */
     public function view(User $user, Certificate $certificate): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('просмотр: сертификат');
     }
 
     /**
@@ -31,8 +29,7 @@ class CertificatePolicy
      */
     public function create(User $user): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('создание: сертификат');
     }
 
     /**
@@ -40,8 +37,7 @@ class CertificatePolicy
      */
     public function update(User $user, Certificate $certificate): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('изменение: сертификат');
     }
 
     /**
@@ -49,8 +45,7 @@ class CertificatePolicy
      */
     public function delete(User $user, Certificate $certificate): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('удаление: сертификат');
     }
 
     /**
@@ -58,8 +53,7 @@ class CertificatePolicy
      */
     public function restore(User $user, Certificate $certificate): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('восстановление: сертификат');
     }
 
     /**
@@ -67,7 +61,6 @@ class CertificatePolicy
      */
     public function forceDelete(User $user, Certificate $certificate): bool
     {
-                return true;
-
+        return $user->hasPermissionTo('безвозвратное удаление: сертификат');
     }
 }

@@ -152,21 +152,55 @@ class RolesAndPermissionsSeeder extends Seeder
             $organizationPermission6,
             $organizationPermission7,
         ]);
-
+        $courierRole = Role::create(['name' => 'Курьер'])->syncPermissions([
+            $certificatePermission1,
+            $certificatePermission2,
+            $certificatePermission4,
+            $chamberPermission1,
+            $chamberPermission2,
+            $chamberPermission4,
+            $companyPermission1,
+            $companyPermission2,
+            $companyPermission4,
+            $expertPermission1,
+            $expertPermission2,
+            $expertPermission4,
+            $typePermission1,
+            $typePermission2,
+            $typePermission4,
+            $organizationPermission1,
+            $organizationPermission2,
+            $organizationPermission4,
+        ]);
         User::create([
+            'email' => 'chief@mail.ru',
             'email_verified_at' => now(),
             'password' => '$2y$10$R5vBPe6dfxDQevMtpH6pmetk3B0oyACoFU7RvLkz8EhUE4u99.r.O', // password 12345678
             'remember_token' => Str::random(10),
             'is_admin' => '1',
-            'username' => 'administrator',
+            'username' => 'руководитель',
+            'name' => 'руководитель',
         ])->assignRole($chiefRole);
-        for ($i=1; $i <2; $i++) {
+        for ($i=1; $i <5; $i++) {
             User::create([
+                'email' => 'user'.$i.'@mail.ru',
                 'email_verified_at' => now(),
                 'password' => '$2y$10$R5vBPe6dfxDQevMtpH6pmetk3B0oyACoFU7RvLkz8EhUE4u99.r.O', // password 12345678
                 'remember_token' => Str::random(10),
                 'is_admin' => '0',
                 'username' => 'пользователь'.$i,
+                'name' => 'пользователь'.$i,
+            ])->assignRole($userRole);
+        }
+        for ($i=1; $i <3; $i++) {
+            User::create([
+                'email' => 'courier'.$i.'@mail.ru',
+                'email_verified_at' => now(),
+                'password' => '$2y$10$R5vBPe6dfxDQevMtpH6pmetk3B0oyACoFU7RvLkz8EhUE4u99.r.O', // password 12345678
+                'remember_token' => Str::random(10),
+                'is_admin' => '0',
+                'username' => 'курьер'.$i,
+                'name' => 'курьер'.$i,
             ])->assignRole($userRole);
         }
 

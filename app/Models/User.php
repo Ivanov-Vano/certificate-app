@@ -23,6 +23,8 @@ class User extends Authenticatable
         'is_admin',
         'email',
         'password',
+        'username',
+        'expert_id'
     ];
 
     /**
@@ -44,4 +46,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function expert()
+    {
+        return $this->belongsTo(Expert::class, 'expert_id')->withDefault();
+    }
+
+    public function canAccessFilament(): bool
+    {
+        return true;
+    }
+
+    public function getFilamentName(): string
+    {
+        return "{$this->name}";
+    }
 }

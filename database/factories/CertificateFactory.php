@@ -31,6 +31,7 @@ class CertificateFactory extends Factory
             'invoice_issued' => $this->faker->boolean,
             'paid' => $this->faker->boolean,
             'date' => $this->faker->dateTimeThisYear(),
+            'extended_page' => $this->faker->numberBetween(1,10),
         ];
     }
 }

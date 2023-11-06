@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Organization extends Model
@@ -17,4 +18,9 @@ class Organization extends Model
         'phone',
         'address'
     ];
+    public function clients():HasMany
+    {
+        return $this->hasMany(Client::class);
+    }
+
 }

@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Certificate;
+use App\Models\Client;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class CertificateSeeder extends Seeder
+class ClientSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Certificate::factory(200)->create();
+        Client::factory(50)->create();
     }
 }

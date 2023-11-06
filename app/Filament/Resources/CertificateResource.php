@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CertificateResource\Pages;
 use App\Filament\Resources\CertificateResource\RelationManagers;
 use App\Models\Certificate;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
@@ -14,11 +15,20 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ForceDeleteBulkAction;
+use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class CertificateResource extends Resource
 {
@@ -32,7 +42,12 @@ class CertificateResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $user = auth()->user();
+        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            return static::getModel()::count();
+        }
+        return static::getEloquentQuery()
+            ->whereBelongsTo(auth()->user()->expert)->count();
     }
 
     public static function form(Form $form): Form
@@ -100,6 +115,9 @@ class CertificateResource extends Resource
                     ->relationship('expert', 'full_name')
                     ->required()
                     ->label('Эксперт ФИО'),
+                TextInput::make('extended_page')
+                    ->numeric()
+                    ->label('Дополнительные листы'),
                 Section::make('Статусы')
                     ->schema([
                         Toggle::make('scan_issued')
@@ -112,6 +130,7 @@ class CertificateResource extends Resource
                 DatePicker::make('date')
                     ->required()
                     ->label('Дата'),
+
             ]);
     }
 
@@ -170,17 +189,90 @@ class CertificateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                //TrashedFilter::make(),
+                Filter::make('date')
+                    ->form([
+                        DatePicker::make('from')->label('с'),
+                        DatePicker::make('until')
+                            ->label('по')
+                            ->default(now()),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('С ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('по ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
+
+                        return $indicators;
+                    }),
+
+                Filter::make('scan_issued')
+                    ->toggle()
+                    ->label('Скан отправлен')
+                    ->query(fn (Builder $query): Builder => $query->where('scan_issued', true)),
+                Filter::make('invoice_issued')
+                    ->toggle()
+                    ->label('Счет выставлен')
+                    ->query(fn (Builder $query): Builder => $query->where('invoice_issued', true)),
+                Filter::make('paid')
+                    ->toggle()
+                    ->label('Счет оплачен')
+                    ->query(fn (Builder $query): Builder => $query->where('paid', true)),
+                SelectFilter::make('type_id')
+                    ->label('Тип сертификата')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('type', 'short_name'),
+                SelectFilter::make('chamber_id')
+                    ->label('Палата')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('chamber', 'short_name'),
+                SelectFilter::make('organization_id')
+                    ->label('Откуда')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->relationship('organization', 'short_name'),
+                SelectFilter::make('company_id')
+                    ->label('Куда')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('company', 'short_name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                    ExportBulkAction::make()
                 ]),
+            ])
+            ->headerActions([
+                ExportAction::make()
+
+                    ->label('Экспорт'),
             ]);
     }
 
@@ -202,7 +294,16 @@ class CertificateResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        $user = auth()->user();
+
+        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            return parent::getEloquentQuery()
+                ->withoutGlobalScopes([
+                    SoftDeletingScope::class,
+                ]);
+        }
         return parent::getEloquentQuery()
+            ->whereBelongsTo(auth()->user()->expert)
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
