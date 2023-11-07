@@ -38,7 +38,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('username')
+                TextInput::make('name')
                     ->required()
                     ->placeholder('Допустимы русские и английские символы')
                     ->label('Логин')
@@ -78,7 +78,7 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('expert.full_name')
                     ->label('Эксперт'),
-                TextColumn::make('username')
+                TextColumn::make('name')
                     ->label('Имя пользователя'),
                 TextColumn::make('email'),
                 TextColumn::make('roles.name')
