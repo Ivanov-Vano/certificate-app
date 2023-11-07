@@ -13,7 +13,7 @@ class ChamberPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('просмотр всех: палата');
     }
 
     /**
@@ -21,7 +21,7 @@ class ChamberPolicy
      */
     public function view(User $user, Chamber $chamber): bool
     {
-        return true;
+        return $user->hasPermissionTo('просмотр: палата');
     }
 
     /**
@@ -29,7 +29,7 @@ class ChamberPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('создание: палата');
     }
 
     /**
@@ -37,7 +37,7 @@ class ChamberPolicy
      */
     public function update(User $user, Chamber $chamber): bool
     {
-        return true;
+        return $user->hasPermissionTo('изменение: палата');
     }
 
     /**
@@ -45,7 +45,7 @@ class ChamberPolicy
      */
     public function delete(User $user, Chamber $chamber): bool
     {
-        return true;
+        return $user->hasPermissionTo('удаление: палата');
     }
 
     /**
@@ -53,7 +53,7 @@ class ChamberPolicy
      */
     public function restore(User $user, Chamber $chamber): bool
     {
-        return true;
+        return $user->hasPermissionTo('восстановление: палата');
     }
 
     /**
@@ -61,6 +61,6 @@ class ChamberPolicy
      */
     public function forceDelete(User $user, Chamber $chamber): bool
     {
-        return true;
+        return $user->hasPermissionTo('безвозвратное удаление: палата');
     }
 }

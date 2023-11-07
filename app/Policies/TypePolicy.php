@@ -13,7 +13,7 @@ class TypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('просмотр всех: тип сертификата');
     }
 
     /**
@@ -21,7 +21,8 @@ class TypePolicy
      */
     public function view(User $user, Type $type): bool
     {
-        return true;
+        return $user->hasPermissionTo('просмотр: тип сертификата');
+
     }
 
     /**
@@ -29,7 +30,8 @@ class TypePolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('создание: тип сертификата');
+
     }
 
     /**
@@ -37,7 +39,8 @@ class TypePolicy
      */
     public function update(User $user, Type $type): bool
     {
-        return true;
+        return $user->hasPermissionTo('изменение: тип сертификата');
+
     }
 
     /**
@@ -45,7 +48,8 @@ class TypePolicy
      */
     public function delete(User $user, Type $type): bool
     {
-        return true;
+        return $user->hasPermissionTo('удаление: тип сертификата');
+
     }
 
     /**
@@ -53,7 +57,7 @@ class TypePolicy
      */
     public function restore(User $user, Type $type): bool
     {
-        return true;
+        return $user->hasPermissionTo('восстановление: тип сертификата');
     }
 
     /**
@@ -61,6 +65,6 @@ class TypePolicy
      */
     public function forceDelete(User $user, Type $type): bool
     {
-        return true;
+        return $user->hasPermissionTo('безвозвратное удаление: тип сертификата');
     }
 }
