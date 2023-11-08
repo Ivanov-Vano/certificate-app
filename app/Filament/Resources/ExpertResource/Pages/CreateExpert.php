@@ -9,4 +9,14 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateExpert extends CreateRecord
 {
     protected static string $resource = ExpertResource::class;
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Создан новый эксперт';
+    }
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
 }
