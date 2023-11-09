@@ -15,6 +15,7 @@ class Expert extends Model
         'name',
         'patronymic',
         'sign_path',
-        'full_name'
+        'full_name',
+        'email'
     ];
 }
