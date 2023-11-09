@@ -24,7 +24,6 @@ class CertificateFactory extends Factory
         return [
             'type_id' => Type::all()->random()->id,
             'chamber_id' => Chamber::all()->random()->id,
-            'organization_id' => Organization::all()->random()->id,
             'company_id' => Company::all()->random()->id,
             'expert_id' => Expert::all()->random()->id,
             'scan_issued' => $this->faker->boolean,
@@ -32,6 +31,8 @@ class CertificateFactory extends Factory
             'paid' => $this->faker->boolean,
             'date' => $this->faker->dateTimeThisYear(),
             'extended_page' => $this->faker->numberBetween(1,10),
+            'payer_id' => Organization::all()->random()->id,
+            'sender_id' => Organization::all()->random()->id,
         ];
     }
 }

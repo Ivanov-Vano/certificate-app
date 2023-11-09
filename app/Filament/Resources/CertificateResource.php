@@ -81,8 +81,21 @@ class CertificateResource extends Resource
                             ->label('Полное наименование'),
                     ])
                     ->label('Торгово-промышленная палата'),
-                Select::make('organization_id')
-                    ->relationship('organization', 'short_name')
+                Select::make('payer_id')
+                    ->relationship('payer', 'short_name')
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('short_name')
+                            ->maxLength(100)
+                            ->required()
+                            ->label('Наименование'),
+                        TextInput::make('name')
+                            ->maxLength(255)
+                            ->label('Полное наименование'),
+                    ])
+                    ->label('Организация (плательщик)'),
+                Select::make('sender_id')
+                    ->relationship('sender', 'short_name')
                     ->required()
                     ->createOptionForm([
                         TextInput::make('short_name')
@@ -150,7 +163,11 @@ class CertificateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('палата'),
-                TextColumn::make('organization.short_name')
+                TextColumn::make('payer.short_name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('плательщик'),
+                TextColumn::make('sender.short_name')
                     ->sortable()
                     ->searchable()
                     ->label('откуда'),

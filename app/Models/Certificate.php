@@ -14,14 +14,15 @@ class Certificate extends Model
     protected $fillable =[
         'type_id',
         'chamber_id',
-        'organization_id',
         'company_id',
         'expert_id',
         'scan_issued',
         'invoice_issued',
         'paid',
         'date',
-        'extended_page'
+        'extended_page',
+        'payer_id',
+        'sender_id'
     ];
 
     public function chamber():BelongsTo
@@ -39,9 +40,13 @@ class Certificate extends Model
         return $this->belongsTo(Expert::class);
     }
 
-    public function organization():BelongsTo
+    public function payer():BelongsTo
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(Organization::class, 'payer_id');
+    }
+    public function sender():BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'sender_id');
     }
 
     public function type(): BelongsTo
