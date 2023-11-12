@@ -21,9 +21,9 @@ class OrganizationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?string $modelLabel = 'организация';
+    protected static ?string $modelLabel = 'заявитель/экспортер';
 
-    protected static ?string $pluralModelLabel = 'организации';
+    protected static ?string $pluralModelLabel = 'заявители/экспортеры';
 
     protected static ?string $navigationGroup = 'Справочники';
 

@@ -22,7 +22,8 @@ class Certificate extends Model
         'date',
         'extended_page',
         'payer_id',
-        'sender_id'
+        'sender_id',
+        'scan_path'
     ];
 
     public function chamber():BelongsTo

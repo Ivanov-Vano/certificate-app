@@ -21,9 +21,9 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $modelLabel = 'компания';
+    protected static ?string $modelLabel = 'получатель';
 
-    protected static ?string $pluralModelLabel = 'компании';
+    protected static ?string $pluralModelLabel = 'получатели';
 
     protected static ?string $navigationGroup = 'Справочники';
 

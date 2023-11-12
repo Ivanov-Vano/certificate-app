@@ -8,6 +8,7 @@ use App\Models\Certificate;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -140,6 +141,12 @@ class CertificateResource extends Resource
                         Toggle::make('paid')
                             ->label('Счет оплачен')
                     ]),
+                FileUpload::make('scan_path')
+                    ->directory('attachments')
+                    ->preserveFilenames()
+                    ->reactive()
+//                    ->afterStateUpdated(fn ($state, callable $set) => $set('name', pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME)))
+                    ->label('Скан сертификата'),
                 DatePicker::make('date')
                     ->required()
                     ->label('Дата'),
