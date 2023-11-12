@@ -42,15 +42,21 @@ class OrganizationResource extends Resource
                     ->maxLength(255),
                 TextInput::make('inn')
                     ->label('ИНН')
-                    ->unique()
-                    ->maxLength(50),
-                TextInput::make('phone')
-                    ->label('телефон')
-                    ->tel()
+                    ->unique(ignoreRecord: true)
                     ->maxLength(50),
                 TextInput::make('address')
                     ->label('адрес')
                     ->maxLength(255),
+                Forms\Components\Section::make('Телефон')
+                    ->schema([
+                        TextInput::make('phone')
+                            ->label('номер')
+                            ->tel()
+                            ->maxLength(50),
+                        TextInput::make('additional_number')
+                            ->label('добавочный номер')
+                            ->maxLength(50),
+                    ])
             ]);
     }
 
@@ -67,11 +73,14 @@ class OrganizationResource extends Resource
                 TextColumn::make('inn')
                     ->label('ИНН')
                     ->searchable(),
+                TextColumn::make('address')
+                    ->label('Адрес')
+                    ->searchable(),
                 TextColumn::make('phone')
                     ->label('Телефон')
                     ->searchable(),
-                TextColumn::make('address')
-                    ->label('Адрес')
+                TextColumn::make('additional_number')
+                    ->label('Добавочный номер')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Создана')

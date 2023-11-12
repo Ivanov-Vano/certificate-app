@@ -16,7 +16,8 @@ class Organization extends Model
         'name',
         'inn',
         'phone',
-        'address'
+        'address',
+        'additional_number'
     ];
     public function clients():HasMany
     {
