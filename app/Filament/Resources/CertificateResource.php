@@ -263,12 +263,18 @@ class CertificateResource extends Resource
                     ->multiple()
                     ->preload()
                     ->relationship('chamber', 'short_name'),
-                SelectFilter::make('organization_id')
+                SelectFilter::make('payer_id')
+                    ->label('Плательщик')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->relationship('payer', 'short_name'),
+                SelectFilter::make('sender_id')
                     ->label('Откуда')
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->relationship('organization', 'short_name'),
+                    ->relationship('sender', 'short_name'),
                 SelectFilter::make('company_id')
                     ->label('Куда')
                     ->multiple()
