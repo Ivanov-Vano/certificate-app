@@ -33,13 +33,17 @@ class ChamberResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('short_name')
                     ->required()
+                    ->label('Краткое наименование')
                     ->maxLength(100),
                 Forms\Components\TextInput::make('name')
+                    ->label('Наименование')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('phone')
+                    ->label('Телефон')
                     ->tel()
                     ->maxLength(50),
                 Forms\Components\TextInput::make('address')
+                    ->label('Адрес')
                     ->maxLength(255),
             ]);
     }
@@ -49,12 +53,16 @@ class ChamberResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('short_name')
+                    ->label('Краткое наименование')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Наименование')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('phone')
+                    ->label('Телефон')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
+                    ->label('Адрес')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
