@@ -42,6 +42,7 @@ class OrganizationResource extends Resource
                     ->maxLength(255),
                 TextInput::make('inn')
                     ->label('ИНН')
+                    ->unique()
                     ->maxLength(50),
                 TextInput::make('phone')
                     ->label('телефон')
