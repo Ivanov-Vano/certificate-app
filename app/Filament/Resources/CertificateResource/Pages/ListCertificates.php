@@ -19,7 +19,7 @@ class ListCertificates extends ListRecords
         return [
             'all' => Tab::make('Все сертификаты'),
             'scan_issued' => Tab::make('Сканы не отправлены')
-                ->badge(Certificate::query()->where('scan_issued', false)->count())
+                ->badge(Certificate::query()->whereNull('scan_path')->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('scan_issued', false)),
             'invoice_issued' => Tab::make('Счета не выставлены')
                 ->badge(Certificate::query()->where('invoice_issued', false)->count())

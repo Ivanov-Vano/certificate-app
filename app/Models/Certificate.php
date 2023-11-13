@@ -16,7 +16,7 @@ class Certificate extends Model
         'chamber_id',
         'company_id',
         'expert_id',
-        'scan_issued',
+//        'scan_issued',
         'invoice_issued',
         'paid',
         'date',

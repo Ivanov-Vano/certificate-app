@@ -132,20 +132,17 @@ class CertificateResource extends Resource
                 TextInput::make('extended_page')
                     ->numeric()
                     ->label('Дополнительные листы'),
-                Section::make('Статусы')
+                Section::make('Счет')
                     ->schema([
-                        Toggle::make('scan_issued')
-                            ->label('Выдан скан'),
                         Toggle::make('invoice_issued')
-                            ->label('Счет выставлен'),
+                            ->label('Выставлен'),
                         Toggle::make('paid')
-                            ->label('Счет оплачен')
+                            ->label('Оплачен')
                     ]),
                 FileUpload::make('scan_path')
                     ->directory('attachments')
-                    ->preserveFilenames()
-                    ->reactive()
-//                    ->afterStateUpdated(fn ($state, callable $set) => $set('name', pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME)))
+                    ->openable()
+                    ->acceptedFileTypes(['application/pdf'])
                     ->label('Скан сертификата'),
                 DatePicker::make('date')
                     ->required()
@@ -182,14 +179,22 @@ class CertificateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('куда'),
+                TextColumn::make('image')
+                    ->label('скан')
+                    ->badge()
+                    ->toggleable()
+                    ->getStateUsing(fn (Certificate $record): string => $record->scan_path == null ? '' : 'Выдан')
+                    ->colors([
+                        'success' => 'Выдан',
+                    ]),
                 TextColumn::make('expert.full_name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label('эксперт'),
-                IconColumn::make('scan_issued')
+/*                IconColumn::make('scan_issued')
                     ->label('выдан скан')
-                    ->boolean(),
+                    ->boolean(),*/
                 IconColumn::make('invoice_issued')
                     ->label('счет выставлен')
                     ->boolean(),
@@ -218,8 +223,8 @@ class CertificateResource extends Resource
                     ->form([
                         DatePicker::make('from')->label('с'),
                         DatePicker::make('until')
-                            ->label('по')
-                            ->default(now()),
+                            ->label('по')/*
+                            ->default(now())*/,
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -248,10 +253,10 @@ class CertificateResource extends Resource
                         return $indicators;
                     }),
 
-                Filter::make('scan_issued')
+                Filter::make('scan_path')
                     ->toggle()
                     ->label('Скан отправлен')
-                    ->query(fn (Builder $query): Builder => $query->where('scan_issued', true)),
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('scan_path')),
                 Filter::make('invoice_issued')
                     ->toggle()
                     ->label('Счет выставлен')
@@ -328,14 +333,14 @@ class CertificateResource extends Resource
 
         if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
             return parent::getEloquentQuery()
-                ->withoutGlobalScopes([
+                /*->withoutGlobalScopes([
                     SoftDeletingScope::class,
-                ]);
+                ])*/;
         }
         return parent::getEloquentQuery()
-            ->whereBelongsTo(auth()->user()->expert)
+            ->whereBelongsTo(auth()->user()->expert)/*
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])*/;
     }
 }
