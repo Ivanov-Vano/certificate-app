@@ -132,13 +132,6 @@ class CertificateResource extends Resource
                 TextInput::make('extended_page')
                     ->numeric()
                     ->label('Дополнительные листы'),
-                Section::make('Счет')
-                    ->schema([
-                        Toggle::make('invoice_issued')
-                            ->label('Выставлен'),
-                        Toggle::make('paid')
-                            ->label('Оплачен')
-                    ]),
                 FileUpload::make('scan_path')
                     ->directory('attachments')
                     ->openable()
@@ -147,7 +140,16 @@ class CertificateResource extends Resource
                 DatePicker::make('date')
                     ->required()
                     ->label('Дата'),
-
+                Section::make('Счет')
+                    ->schema([
+                        Toggle::make('invoice_issued')
+                            ->label('Выставлен'),
+                        Toggle::make('paid')
+                            ->label('Оплачен')
+                    ]),
+                Toggle::make('is_delivered')
+                    ->hidden(auth()->user()->hasRole(['Эксперт']))
+                    ->label('Сертификат доставлен')
             ]);
     }
 
@@ -182,7 +184,6 @@ class CertificateResource extends Resource
                 TextColumn::make('image')
                     ->label('скан')
                     ->badge()
-                    ->toggleable()
                     ->getStateUsing(fn (Certificate $record): string => $record->scan_path == null ? '' : 'Выдан')
                     ->colors([
                         'success' => 'Выдан',
@@ -190,7 +191,7 @@ class CertificateResource extends Resource
                 TextColumn::make('expert.full_name')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->hidden(auth()->user()->hasRole(['Эксперт']))
                     ->label('эксперт'),
 /*                IconColumn::make('scan_issued')
                     ->label('выдан скан')
@@ -200,6 +201,9 @@ class CertificateResource extends Resource
                     ->boolean(),
                 IconColumn::make('paid')
                     ->label('счет оплачен')
+                    ->boolean(),
+                IconColumn::make('is_delivered')
+                    ->label('сертификат доставлен')
                     ->boolean(),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
@@ -291,7 +295,12 @@ class CertificateResource extends Resource
                     ->label('Куда')
                     ->multiple()
                     ->preload()
-                    ->relationship('company', 'short_name')
+                    ->relationship('company', 'short_name'),
+                SelectFilter::make('expert_id')
+                    ->label('Эксперт')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('expert', 'full_name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

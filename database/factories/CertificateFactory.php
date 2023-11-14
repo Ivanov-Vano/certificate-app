@@ -33,6 +33,8 @@ class CertificateFactory extends Factory
             'extended_page' => $this->faker->numberBetween(1,10),
             'payer_id' => Organization::all()->random()->id,
             'sender_id' => Organization::all()->random()->id,
+            'scan_path' => $this->faker->sentence,
+            'is_delivered' => $this->faker->boolean,
         ];
     }
 }
