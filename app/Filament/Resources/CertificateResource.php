@@ -128,6 +128,7 @@ class CertificateResource extends Resource
                 Select::make('expert_id')
                     ->relationship('expert', 'full_name')
                     ->required()
+                    ->hidden(auth()->user()->hasRole(['Эксперт']))
                     ->label('Эксперт ФИО'),
                 TextInput::make('extended_page')
                     ->numeric()
@@ -192,6 +193,11 @@ class CertificateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->hidden(auth()->user()->hasRole(['Эксперт']))
+                    ->words(1)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        return $state;
+                    })
                     ->label('эксперт'),
 /*                IconColumn::make('scan_issued')
                     ->label('выдан скан')

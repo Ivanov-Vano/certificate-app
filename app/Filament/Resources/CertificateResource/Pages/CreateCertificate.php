@@ -18,5 +18,13 @@ class CreateCertificate extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $user = auth()->user();
 
+        if ($user->hasRole(['Эксперт'])) {
+            $data['expert_id'] = $user->expert->id;
+            return $data;
+        }
+    }
 }
