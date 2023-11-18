@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\CertificateResource\Pages;
 
 use App\Filament\Resources\CertificateResource;
+use App\Models\Type;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use function Laravel\Prompts\select;
 
 class CreateCertificate extends CreateRecord
 {
@@ -21,10 +23,20 @@ class CreateCertificate extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $user = auth()->user();
+        $typeId = $data['type_id'];
 
+        $priceArr = Type::query()
+            ->select('price')
+            ->whereKey($typeId)
+            ->pluck('price')
+            ->toArray();
+        $price = array_values($priceArr)[0];
         if ($user->hasRole(['Эксперт'])) {
             $data['expert_id'] = $user->expert->id;
-            return $data;
         }
+        if ($data['scan_path'] !==null) {
+            $data['cost'] = $price;
+        }
+        return $data;
     }
 }

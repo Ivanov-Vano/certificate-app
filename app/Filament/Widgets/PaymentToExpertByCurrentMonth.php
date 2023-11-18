@@ -2,8 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\ExpertResource;
-use Filament\Tables;
+use App\Filament\Resources\CertificateResource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -21,15 +20,14 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
     {
         return $table
             ->query(
-                ExpertResource::getEloquentQuery()
+                CertificateResource::getEloquentQuery()
             )
             ->defaultPaginationPageOption(5)
-            ->defaultSort('full_name', 'asc')
+            ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('full_name')->sortable()->label('ФИО'),
-                TextColumn::make('certificates_count')
-                    ->counts('certificates')
-                    ->label('11'),
+                TextColumn::make('expert.full_name')->sortable()->label('ФИО'),
+                TextColumn::make('cost')
+                    ->label('стоимость'),
             ]);
     }
 }

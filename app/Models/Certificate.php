@@ -24,7 +24,8 @@ class Certificate extends Model
         'payer_id',
         'sender_id',
         'scan_path',
-        'is_delivered'
+        'is_delivered',
+        'cost'
     ];
 
     public function chamber():BelongsTo
