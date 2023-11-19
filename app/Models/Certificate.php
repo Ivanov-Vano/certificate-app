@@ -11,6 +11,10 @@ class Certificate extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $casts = [
+        'date' => 'date:Y-m-d',
+    ];
+
     protected $fillable =[
         'type_id',
         'chamber_id',
