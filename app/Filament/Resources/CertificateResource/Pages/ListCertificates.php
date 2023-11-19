@@ -27,9 +27,9 @@ class ListCertificates extends ListRecords
             'paid' => Tab::make('Счета не оплачены')
                 ->badge(Certificate::query()->where('paid', false)->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('paid', false)),
-            'is_delivered' => Tab::make('Сертификаты не доставлены')
-                ->badge(Certificate::query()->where('is_delivered', false)->count())
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_delivered', false)),
+            'delivery_id' => Tab::make('Сертификаты не доставлены')
+                ->badge(Certificate::query()->whereNull('delivery_id')->count())
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('delivery_id')),
         ];
     }
     protected function getHeaderActions(): array

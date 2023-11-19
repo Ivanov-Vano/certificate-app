@@ -148,9 +148,9 @@ class CertificateResource extends Resource
                         Toggle::make('paid')
                             ->label('Оплачен')
                     ]),
-                Toggle::make('is_delivered')
-                    ->hidden(auth()->user()->hasRole(['Эксперт']))
-                    ->label('Сертификат доставлен')
+/*                Select::make('delivery_id')
+                    ->relationship('del', 'full_name')
+                    ->label('Доставка'),*/
             ]);
     }
 
@@ -177,6 +177,11 @@ class CertificateResource extends Resource
                 TextColumn::make('sender.short_name')
                     ->sortable()
                     ->searchable()
+                    ->words(1)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        return $state;
+                    })
                     ->label('откуда'),
                 TextColumn::make('company.short_name')
                     ->sortable()
@@ -205,9 +210,13 @@ class CertificateResource extends Resource
                 IconColumn::make('paid')
                     ->label('счет оплачен')
                     ->boolean(),
-                IconColumn::make('is_delivered')
-                    ->label('сертификат доставлен')
-                    ->boolean(),
+                TextColumn::make('delivery_id')
+                    ->label('статус доставки')
+                    ->badge()
+                    ->getStateUsing(fn (Certificate $record): string => $record->delivery_id == null ? '' : 'Доставлен')
+                    ->colors([
+                        'success' => 'Доставлен',
+                    ]),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -272,6 +281,10 @@ class CertificateResource extends Resource
                     ->toggle()
                     ->label('Счет оплачен')
                     ->query(fn (Builder $query): Builder => $query->where('paid', true)),
+                Filter::make('delivery_id')
+                    ->toggle()
+                    ->label('Доставлен')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('delivery_id')),
                 SelectFilter::make('type_id')
                     ->label('Тип сертификата')
                     ->multiple()

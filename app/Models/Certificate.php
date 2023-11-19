@@ -27,7 +27,6 @@ class Certificate extends Model
         'payer_id',
         'sender_id',
         'scan_path',
-        'is_delivered',
         'cost',
         'delivery_id'
     ];
