@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Delivery;
+use App\Models\Expert;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -76,6 +78,24 @@ class RolesAndPermissionsSeeder extends Seeder
         $typePermission5 = Permission::create(['name' => 'удаление: тип сертификата']);
         $typePermission6 = Permission::create(['name' => 'восстановление: тип сертификата']);
         $typePermission7 = Permission::create(['name' => 'безвозвратное удаление: тип сертификата']);
+
+        //delivery model
+        $deliveryPermission1 = Permission::create(['name' => 'просмотр всех: доставка']);
+        $deliveryPermission2 = Permission::create(['name' => 'просмотр: доставка']);
+        $deliveryPermission3 = Permission::create(['name' => 'создание: доставка']);
+        $deliveryPermission4 = Permission::create(['name' => 'изменение: доставка']);
+        $deliveryPermission5 = Permission::create(['name' => 'удаление: доставка']);
+        $deliveryPermission6 = Permission::create(['name' => 'восстановление: доставка']);
+        $deliveryPermission7 = Permission::create(['name' => 'безвозвратное удаление: доставка']);
+
+        //deliveryman model
+        $deliverymanPermission1 = Permission::create(['name' => 'просмотр всех: курьер']);
+        $deliverymanPermission2 = Permission::create(['name' => 'просмотр: курьер']);
+        $deliverymanPermission3 = Permission::create(['name' => 'создание: курьер']);
+        $deliverymanPermission4 = Permission::create(['name' => 'изменение: курьер']);
+        $deliverymanPermission5 = Permission::create(['name' => 'удаление: курьер']);
+        $deliverymanPermission6 = Permission::create(['name' => 'восстановление: курьер']);
+        $deliverymanPermission7 = Permission::create(['name' => 'безвозвратное удаление: курьер']);
 
 
         //CREATE ROLES (создание ролей)
@@ -195,6 +215,20 @@ class RolesAndPermissionsSeeder extends Seeder
             $organizationPermission5,
             $organizationPermission6,
             $organizationPermission7,
+            $deliverymanPermission1,
+            $deliverymanPermission1,
+            $deliverymanPermission1,
+            $deliverymanPermission1,
+            $deliverymanPermission1,
+            $deliverymanPermission1,
+            $deliverymanPermission1,
+            $deliveryPermission1,
+            $deliveryPermission2,
+            $deliveryPermission3,
+            $deliveryPermission4,
+            $deliveryPermission5,
+            $deliveryPermission6,
+            $deliveryPermission7,
         ]);
         $courierRole = Role::create(['name' => 'Курьер'])->syncPermissions([
             $certificatePermission1,
@@ -215,6 +249,12 @@ class RolesAndPermissionsSeeder extends Seeder
             $organizationPermission1,
             $organizationPermission2,
             $organizationPermission4,
+            $deliverymanPermission1,
+            $deliverymanPermission2,
+            $deliverymanPermission4,
+            $deliveryPermission1,
+            $deliveryPermission2,
+            $deliveryPermission4,
         ]);
         User::create([
             'email' => 'chief@mail.ru',
@@ -243,6 +283,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_admin' => '0',
                 'username' => 'пользователь'.$i,
                 'name' => 'пользователь'.$i,
+                'expert_id' => Expert::all()->random()->id,
             ])->assignRole($userRole);
         }
         for ($i=1; $i <3; $i++) {
@@ -254,7 +295,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_admin' => '0',
                 'username' => 'курьер'.$i,
                 'name' => 'курьер'.$i,
-            ])->assignRole($userRole);
+                'deliveryman_id' => Delivery::all()->random()->id,
+            ])->assignRole($courierRole);
         }
 
     }

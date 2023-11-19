@@ -68,7 +68,11 @@ class UserResource extends Resource
                 Select::make('expert_id')
                     ->label('Эксперты')
                     ->preload()
-                    ->relationship('expert', 'full_name')
+                    ->relationship('expert', 'full_name'),
+                Select::make('deliveryman_id')
+                    ->label('Курьеры')
+                    ->preload()
+                    ->relationship('deliveryman', 'full_name')//ToDo dependent
             ]);
     }
 
@@ -78,6 +82,8 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('expert.full_name')
                     ->label('Эксперт'),
+                TextColumn::make('deliveryman.full_name')
+                    ->label('Курьер'),
                 TextColumn::make('name')
                     ->label('Имя пользователя'),
                 TextColumn::make('email'),

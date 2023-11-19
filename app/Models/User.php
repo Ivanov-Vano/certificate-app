@@ -51,6 +51,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Expert::class, 'expert_id')->withDefault();
     }
+    public function deliveryman()
+    {
+        return $this->belongsTo(Deliveryman::class, 'deliveryman_id')->withDefault();
+    }
 
     public function canAccessFilament(): bool
     {
