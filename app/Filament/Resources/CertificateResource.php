@@ -199,9 +199,6 @@ class CertificateResource extends Resource
                         return $state;
                     })
                     ->label('эксперт'),
-/*                IconColumn::make('scan_issued')
-                    ->label('выдан скан')
-                    ->boolean(),*/
                 IconColumn::make('invoice_issued')
                     ->label('счет выставлен')
                     ->boolean(),

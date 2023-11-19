@@ -20,7 +20,6 @@ class Certificate extends Model
         'chamber_id',
         'company_id',
         'expert_id',
-//        'scan_issued',
         'invoice_issued',
         'paid',
         'date',
@@ -29,7 +28,8 @@ class Certificate extends Model
         'sender_id',
         'scan_path',
         'is_delivered',
-        'cost'
+        'cost',
+        'delivery_id'
     ];
 
     public function chamber():BelongsTo

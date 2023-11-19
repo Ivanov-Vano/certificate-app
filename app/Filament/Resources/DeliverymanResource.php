@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ExpertResource\Pages;
-use App\Filament\Resources\ExpertResource\RelationManagers;
-use App\Models\Expert;
+use App\Filament\Resources\DeliverymanResource\Pages;
+use App\Filament\Resources\DeliverymanResource\RelationManagers;
+use App\Models\Deliveryman;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -16,26 +16,26 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ExpertResource extends Resource
+class DeliverymanResource extends Resource
 {
-    protected static ?string $model = Expert::class;
+    protected static ?string $model = Deliveryman::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
 
-    protected static ?string $modelLabel = 'эксперт';
+    protected static ?string $modelLabel = 'курьер';
 
-    protected static ?string $pluralModelLabel = 'эксперты';
+    protected static ?string $pluralModelLabel = 'курьеры';
 
     protected static ?string $navigationGroup = 'Справочники';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Section::make('ФИО')
-                    ->description('Заполните данные эксперта')
+                    ->description('Заполните данные курьера')
                     ->schema([
                         TextInput::make('surname')
                             ->required()
@@ -54,10 +54,14 @@ class ExpertResource extends Resource
                     ->required()
                     ->label('ФИО')
                     ->maxLength(255),
+                TextInput::make('phone')
+                    ->label('Телефон')
+                    ->tel()
+                    ->maxLength(50),
                 TextInput::make('email')
                     ->label('Почта')
                     ->email()
-                    ->maxLength(255),
+                    ->maxLength(100),
             ]);
     }
 
@@ -67,9 +71,11 @@ class ExpertResource extends Resource
             ->columns([
                 TextColumn::make('full_name')->sortable()->label('ФИО'),
                 TextColumn::make('email')->label('Почта'),
+                TextColumn::make('phone')->label('Телефон')
+                    ->searchable(),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -77,8 +83,6 @@ class ExpertResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -93,17 +97,9 @@ class ExpertResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExperts::route('/'),
-            'create' => Pages\CreateExpert::route('/create'),
-            'edit' => Pages\EditExpert::route('/{record}/edit'),
+            'index' => Pages\ListDeliverymen::route('/'),
+            'create' => Pages\CreateDeliveryman::route('/create'),
+            'edit' => Pages\EditDeliveryman::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

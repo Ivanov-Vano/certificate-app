@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             TypeSeeder::class,
             CertificateSeeder::class,
             ClientSeeder::class,
+            DeliverymanSeeder::class,
+            DeliverySeeder::class
         ]);
     }
 }
