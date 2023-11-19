@@ -11,6 +11,14 @@ class CertificateByExpertChart extends ChartWidget
     protected static ?string $heading = 'Статистика по экспертам';
     protected static ?int $sort = 4;
 
+    public static function canView(): bool
+    {
+        if (auth()->user()->hasRole(['Эксперт'])) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     protected function getData(): array
     {
         $data = Certificate::select('surname', DB::raw('count(*) as count'))

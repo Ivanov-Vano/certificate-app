@@ -41,8 +41,16 @@ class CertificatesChart extends ChartWidget
 
 
         $certificatesPerMonth = collect(range(1,12))->map(function ($month) use($now) {
+            if (auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+                return Certificate::query()
+                    ->whereMonth('date', Carbon::parse($now->month($month)
+                        ->format('Y-m')))->count();
+            }
+            return Certificate::query()
+                ->whereBelongsTo(auth()->user()->expert)
+                ->whereMonth('date', Carbon::parse($now->month($month)
+                    ->format('Y-m')))->count();
 
-            return Certificate::query()->whereMonth('date', Carbon::parse($now->month($month)->format('Y-m')))->count();
         })->toArray();
 
         return [

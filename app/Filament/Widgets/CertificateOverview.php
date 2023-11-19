@@ -15,10 +15,27 @@ class CertificateOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Сертификаты', Certificate::query()->count())
+            Stat::make('Сертификаты',
+                function ():string {
+                    if (auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+                        return Certificate::query()->count();
+                    }
+                    return Certificate::query()->whereBelongsTo(auth()->user()->expert)->count();
+                })
                 ->description('Всего')
                 ->color('success'),
-            Stat::make('Сертификаты', Certificate::query()->whereMonth('date', now())->count())
+            Stat::make('Сертификаты',
+                function ():string {
+                    if (auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+                        return Certificate::query()
+                            ->whereMonth('date', now())
+                            ->count();
+                    }
+                    return Certificate::query()
+                        ->whereBelongsTo(auth()->user()->expert)
+                        ->whereMonth('date', now())
+                        ->count();
+                })
                 ->description('Всего за текущий месяц')
                 ->color('success'),
 
