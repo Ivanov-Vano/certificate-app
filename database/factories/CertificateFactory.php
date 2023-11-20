@@ -26,7 +26,6 @@ class CertificateFactory extends Factory
             'chamber_id' => Chamber::all()->random()->id,
             'company_id' => Company::all()->random()->id,
             'expert_id' => Expert::all()->random()->id,
-            'scan_issued' => $this->faker->boolean,
             'invoice_issued' => $this->faker->boolean,
             'paid' => $this->faker->boolean,
             'date' => $this->faker->dateTimeThisYear(),
@@ -34,7 +33,8 @@ class CertificateFactory extends Factory
             'payer_id' => Organization::all()->random()->id,
             'sender_id' => Organization::all()->random()->id,
             'scan_path' => $this->faker->sentence,
-            'cost' => $this->faker->randomFloat(),
+            'cost' => $this->faker->randomFloat(2, 1, 99999999),
+            'number' => $this->faker->numberBetween(100,1000),
         ];
     }
 }

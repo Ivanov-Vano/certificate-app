@@ -216,12 +216,12 @@ class RolesAndPermissionsSeeder extends Seeder
             $organizationPermission6,
             $organizationPermission7,
             $deliverymanPermission1,
-            $deliverymanPermission1,
-            $deliverymanPermission1,
-            $deliverymanPermission1,
-            $deliverymanPermission1,
-            $deliverymanPermission1,
-            $deliverymanPermission1,
+            $deliverymanPermission2,
+            $deliverymanPermission3,
+            $deliverymanPermission4,
+            $deliverymanPermission5,
+            $deliverymanPermission6,
+            $deliverymanPermission7,
             $deliveryPermission1,
             $deliveryPermission2,
             $deliveryPermission3,
@@ -283,7 +283,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_admin' => '0',
                 'username' => 'пользователь'.$i,
                 'name' => 'пользователь'.$i,
-                'expert_id' => Expert::all()->random()->id,
+             //   'expert_id' => Expert::all()->random()->id,
             ])->assignRole($userRole);
         }
         for ($i=1; $i <3; $i++) {
@@ -295,7 +295,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'is_admin' => '0',
                 'username' => 'курьер'.$i,
                 'name' => 'курьер'.$i,
-                'deliveryman_id' => Delivery::all()->random()->id,
+              //  'deliveryman_id' => Delivery::all()->random()->id,
             ])->assignRole($courierRole);
         }
 

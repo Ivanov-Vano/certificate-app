@@ -5,7 +5,9 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CertificateResource\Pages;
 use App\Filament\Resources\CertificateResource\RelationManagers;
 use App\Models\Certificate;
+use App\Models\Delivery;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -16,6 +18,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -27,6 +30,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -55,6 +59,9 @@ class CertificateResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('number')
+                    ->numeric()
+                    ->label('Номер заявки'),
                 Select::make('type_id')
                     ->autofocus()
                     ->relationship('type', 'short_name')
@@ -158,6 +165,9 @@ class CertificateResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('number')
+                    ->sortable()
+                    ->label('Номер'),
                 TextColumn::make('date')
                     ->date('d.m.Y')
                     ->sortable()
@@ -326,13 +336,23 @@ class CertificateResource extends Resource
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                    ExportBulkAction::make()
+                    ExportBulkAction::make(),
+/*                    BulkAction::make('updateDelivery')
+                        ->form([
+                            Select::make('delivery_id')
+                                ->label('Доставка')
+                                ->options(Delivery::query()->pluck('number', 'id'))
+                                ->required(),
+                        ])
+                        ->action(function (array $data, Collection $records):void {
+                            $records->each->delivery_id = $data['delivery_id'];
+                            dd($data['delivery_id']);
+                            $records->save();
+                        })*/
                 ]),
             ])
             ->headerActions([
-                ExportAction::make()
-
-                    ->label('Экспорт'),
+                ExportAction::make()->label('Экспорт'),
             ]);
     }
 

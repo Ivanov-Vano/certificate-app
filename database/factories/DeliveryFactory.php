@@ -21,7 +21,7 @@ class DeliveryFactory extends Factory
         return [
             'number' => $this->faker->numberBetween(1,10),
             'accepted_at' => $this->faker->dateTimeThisYear(),
-            'cost' => $this->faker->randomFloat(2, 1, 9999999999),
+            'cost' => $this->faker->randomFloat(2, 1, 99999999),
             'organization_id' => Organization::all()->random()->id,
             'deliveryman_id' => Deliveryman::all()->random()->id,
             'is_pickup' => $this->faker->boolean,
