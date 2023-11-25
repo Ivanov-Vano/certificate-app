@@ -34,7 +34,7 @@ class CertificateFactory extends Factory
             'sender_id' => Organization::all()->random()->id,
             'scan_path' => $this->faker->sentence,
             'cost' => $this->faker->randomFloat(2, 1, 99999999),
-            'number' => $this->faker->numberBetween(100,1000),
+            'number' => '2023/0'.$this->faker->numberBetween(100,999),
         ];
     }
 }

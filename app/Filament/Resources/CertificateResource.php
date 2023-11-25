@@ -60,8 +60,13 @@ class CertificateResource extends Resource
         return $form
             ->schema([
                 TextInput::make('number')
-                    ->numeric()
+                    ->required()
+                    ->readOnly()
                     ->label('Номер заявки'),
+                DatePicker::make('date')
+                    ->required()
+                    ->label('Дата'),
+
                 Select::make('type_id')
                     ->autofocus()
                     ->relationship('type', 'short_name')
@@ -145,9 +150,6 @@ class CertificateResource extends Resource
                     ->openable()
                     ->acceptedFileTypes(['application/pdf'])
                     ->label('Скан сертификата'),
-                DatePicker::make('date')
-                    ->required()
-                    ->label('Дата'),
                 Section::make('Счет')
                     ->schema([
                         Toggle::make('invoice_issued')
@@ -155,9 +157,6 @@ class CertificateResource extends Resource
                         Toggle::make('paid')
                             ->label('Оплачен')
                     ]),
-/*                Select::make('delivery_id')
-                    ->relationship('del', 'full_name')
-                    ->label('Доставка'),*/
             ]);
     }
 
@@ -167,6 +166,7 @@ class CertificateResource extends Resource
             ->columns([
                 TextColumn::make('number')
                     ->sortable()
+                    ->searchable()
                     ->label('Номер'),
                 TextColumn::make('date')
                     ->date('d.m.Y')
