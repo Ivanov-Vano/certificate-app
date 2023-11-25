@@ -6,6 +6,8 @@ use App\Filament\Resources\OrganizationResource\Pages;
 use App\Filament\Resources\OrganizationResource\RelationManagers;
 use App\Models\Organization;
 use Filament\Forms;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -33,31 +35,51 @@ class OrganizationResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('short_name')
-                    ->label('Наименование')
-                    ->required()
-                    ->maxLength(100),
-                TextInput::make('name')
-                    ->label('Полное наименование')
-                    ->maxLength(255),
-                TextInput::make('inn')
-                    ->label('ИНН')
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(50),
-                TextInput::make('address')
-                    ->label('адрес')
-                    ->maxLength(255),
-                Forms\Components\Section::make('Телефон')
+                Group::make()
                     ->schema([
-                        TextInput::make('phone')
-                            ->label('номер')
-                            ->tel()
-                            ->maxLength(50),
-                        TextInput::make('additional_number')
-                            ->label('добавочный номер')
-                            ->maxLength(50),
+                        Section::make([
+                            TextInput::make('short_name')
+                                ->label('Наименование')
+                                ->required()
+                                ->maxLength(100),
+                            TextInput::make('inn')
+                                ->label('ИНН')
+                                ->unique(ignoreRecord: true)
+                                ->maxLength(50),
+                            TextInput::make('name')
+                                ->label('Полное наименование')
+                                ->columnSpanFull()
+                                ->maxLength(255),
+                            TextInput::make('address')
+                                ->label('адрес')
+                                ->columnSpanFull()
+                                ->maxLength(255),
+                        ])
+                            ->columns(2),
+                        Section::make('Телефон')
+                            ->schema([
+                                TextInput::make('phone')
+                                    ->label('номер')
+                                    ->tel()
+                                    ->maxLength(50),
+                                TextInput::make('additional_number')
+                                    ->label('добавочный номер')
+                                    ->maxLength(50),
+                            ])->columns(2),
                     ])
-            ]);
+                    ->columnSpan(['lg' => 2]),
+                Group::make([
+                    Section::make('Pricing')
+                        ->schema([
+                            TextInput::make('delivery_price')
+                                ->numeric()
+                                ->suffix('руб')
+                                ->label('цена доставки'),
+                        ])
+                ])
+                    ->columnSpan(['lg' => 1]),
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table

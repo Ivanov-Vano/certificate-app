@@ -41,8 +41,7 @@ class TypeResource extends Resource
                     ->maxLength(255),
                 TextInput::make('price')
                     ->label('Цена')
-                    ->numeric()
-                    ->maxLength(255),
+                    ->numeric(),
             ]);
     }
 
