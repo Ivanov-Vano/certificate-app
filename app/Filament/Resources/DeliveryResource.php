@@ -30,6 +30,16 @@ class DeliveryResource extends Resource
 
     protected static ?string $pluralModelLabel = 'доставки';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $user = auth()->user();
+        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            return static::getModel()::count();
+        }
+        return static::getEloquentQuery()
+            ->whereBelongsTo(auth()->user()->deliveryman)->count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -137,5 +147,15 @@ class DeliveryResource extends Resource
             'create' => Pages\CreateDelivery::route('/create'),
             'edit' => Pages\EditDelivery::route('/{record}/edit'),
         ];
+    }
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            return parent::getEloquentQuery();
+        }
+        return parent::getEloquentQuery()
+            ->whereBelongsTo(auth()->user()->deliveryman);
     }
 }
