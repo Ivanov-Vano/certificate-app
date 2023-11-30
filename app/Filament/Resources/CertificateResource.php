@@ -3,12 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CertificateResource\Pages;
-use App\Filament\Resources\CertificateResource\RelationManagers;
 use App\Models\Certificate;
-use App\Models\Delivery;
 use Carbon\Carbon;
-use Filament\Actions\Action;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
@@ -18,7 +14,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
@@ -27,11 +22,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
@@ -377,15 +369,9 @@ class CertificateResource extends Resource
         $user = auth()->user();
 
         if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
-            return parent::getEloquentQuery()
-                /*->withoutGlobalScopes([
-                    SoftDeletingScope::class,
-                ])*/;
+            return parent::getEloquentQuery();
         }
         return parent::getEloquentQuery()
-            ->whereBelongsTo(auth()->user()->expert)/*
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ])*/;
+            ->whereBelongsTo(auth()->user()->expert);
     }
 }

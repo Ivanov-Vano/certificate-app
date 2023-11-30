@@ -62,6 +62,6 @@ class Certificate extends Model
     }
     public function delivery(): BelongsTo
     {
-        return $this->belongsTo(Delivery::class, 'delivery_id');
+        return $this->belongsTo(Delivery::class);
     }
 }
