@@ -236,7 +236,6 @@ class CertificateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //TrashedFilter::make(),
                 Filter::make('date')
                     ->form([
                         DatePicker::make('from')->label('с'),

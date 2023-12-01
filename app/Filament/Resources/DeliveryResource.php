@@ -6,6 +6,7 @@ use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Certificate;
 use App\Models\Delivery;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -16,6 +17,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -71,15 +75,16 @@ class DeliveryResource extends Resource
             ->columns([
                 TextColumn::make('number')
                     ->sortable()
+                    ->searchable()
                     ->label('Номер'),
                 TextColumn::make('accepted_at')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
                     ->words(1)
                     ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
-                        return $state;
+                        return $column->getState();
                     })
+                    ->toggleable()
                     ->label('Принято в доставку'),
                 TextColumn::make('organization.short_name')
                     ->sortable()
@@ -92,8 +97,7 @@ class DeliveryResource extends Resource
                     ->hidden(auth()->user()->hasRole(['Курьер']))
                     ->words(1)
                     ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
-                        return $state;
+                        return $column->getState();
                     })
                     ->label('Курьер'),
                 IconColumn::make('is_pickup')
@@ -121,7 +125,53 @@ class DeliveryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('delivered_at')
+                    ->form([
+                        DatePicker::make('from')->label('с'),
+                        DatePicker::make('until')
+                            ->label('по'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('delivered_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('delivered_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('С ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
+
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('по ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
+
+                        return $indicators;
+                    }),
+
+                Filter::make('is_pickup')
+                    ->toggle()
+                    ->label('Самовывоз')
+                    ->query(fn (Builder $query): Builder => $query->where('is_pickup', true)),
+                SelectFilter::make('organization_id')
+                    ->label('Получатель')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('organization', 'short_name'),
+                SelectFilter::make('deliveryman_id')
+                    ->label('Эксперт')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('deliveryman', 'full_name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
