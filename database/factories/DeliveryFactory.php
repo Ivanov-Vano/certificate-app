@@ -19,7 +19,7 @@ class DeliveryFactory extends Factory
     public function definition(): array
     {
         return [
-            'number' => $this->faker->numberBetween(1,10),
+            'number' => '0'.$this->faker->numberBetween(100,999).'-23',
             'accepted_at' => $this->faker->dateTimeThisYear(),
             'cost' => $this->faker->randomFloat(2, 1, 99999999),
             'organization_id' => Organization::all()->random()->id,

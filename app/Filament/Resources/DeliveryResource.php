@@ -50,6 +50,7 @@ class DeliveryResource extends Resource
             ->schema([
                 TextInput::make('number')
                     ->numeric()
+                    ->readOnly()
                     ->label('Номер доставки'),
                 DatePicker::make('accepted_at')
                     ->required()
