@@ -16,13 +16,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Summarizers\Count;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DeliveryResource extends Resource
 {
@@ -49,7 +50,6 @@ class DeliveryResource extends Resource
         return $form
             ->schema([
                 TextInput::make('number')
-                    ->numeric()
                     ->readOnly()
                     ->label('Номер доставки'),
                 DatePicker::make('accepted_at')
@@ -65,6 +65,11 @@ class DeliveryResource extends Resource
                     ->label('Курьер ФИО'),
                 Toggle::make('is_pickup')
                     ->label('Самовывоз'),
+                TextInput::make('cost')
+                    ->numeric()
+                    ->readOnly(auth()->user()->hasRole(['Курьер']))
+                    ->suffix('руб')
+                    ->label('цена доставки'),
                 DatePicker::make('delivered_at')
                     ->label('Доставлено'),
             ]);
@@ -73,6 +78,7 @@ class DeliveryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->striped()
             ->columns([
                 TextColumn::make('number')
                     ->sortable()
@@ -101,9 +107,17 @@ class DeliveryResource extends Resource
                         return $column->getState();
                     })
                     ->label('Курьер'),
+                TextColumn::make('cost')
+                    ->summarize(Sum::make()->money('RUB'))
+                    ->label('Cтоимость'),
+                TextColumn::make('certificates_count')
+                    ->counts('certificates')
+                    ->label('Количество передаваемых сертификатов'),
                 IconColumn::make('is_pickup')
                     ->label('Самовывоз')
-                    ->boolean(),
+                    ->boolean()
+                    ->summarize(
+                        Count::make()->icons()),
                 TextColumn::make('delivered_at')
                     ->label('Дата и время доставки')
                     ->dateTime('d.m.Y H:i:s')

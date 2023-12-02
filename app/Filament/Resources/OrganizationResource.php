@@ -69,7 +69,7 @@ class OrganizationResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
                 Group::make([
-                    Section::make('Pricing')
+                    Section::make('Стоимость')
                         ->schema([
                             TextInput::make('delivery_price')
                                 ->numeric()

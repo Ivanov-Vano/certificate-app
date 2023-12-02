@@ -16,7 +16,9 @@ class ClientsRelationManager extends RelationManager
 {
     protected static string $relationship = 'clients';
 
-    protected static ?string $recordTitleAttribute = 'Наименование';
+    protected static ?string $recordTitleAttribute = 'full_name';
+
+    protected static ?string $title = 'Клиенты от организации и их контакты';
 
     protected static ?string $modelLabel = 'клиент';
 
