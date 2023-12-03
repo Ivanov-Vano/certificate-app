@@ -19,7 +19,7 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
 
     protected int | string | array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Статистика по экспертам за текущий месяц';
+    protected static ?string $heading = 'Статистика по экспертам за предыдущий месяц';
 
 
     public function table(Table $table): Table
@@ -27,14 +27,11 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
         return $table
             ->query(
                 CertificateResource::getEloquentQuery()
-                ->whereMonth('date', Carbon::now()->month)
+                ->whereMonth('date', ((Carbon::now()->month)-1))
             )
 
             ->defaultPaginationPageOption(0)
-//            ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('date')
-                    ->label('Дата'),
                 TextColumn::make('cost')
                     ->summarize(Sum::make()->money('RUB'))
                     ->label('Cтоимость'),
