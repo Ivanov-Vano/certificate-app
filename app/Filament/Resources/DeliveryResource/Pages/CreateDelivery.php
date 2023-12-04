@@ -41,12 +41,16 @@ class CreateDelivery extends CreateRecord
         switch (strlen($number)) {
             case 1:
                 $number = '000'.$number;
+                break;
             case 2:
                 $number = '00'.$number;
+                break;
             case 3:
                 $number = '0'.$number;
+                break;
             case 4:
                 $number = ''.$number;
+                break;
         }
         $number = $number.'-'.$year;
         $data['number'] = $number;

@@ -42,6 +42,7 @@ class CompanyResource extends Resource
                     ->label('Страна'),
                 TextInput::make('short_name')
                     ->required()
+                    ->unique(ignoreRecord: true)
                     ->label('Краткое наименование')
                     ->maxLength(100),
                 TextInput::make('name')

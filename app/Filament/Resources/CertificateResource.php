@@ -159,7 +159,8 @@ class CertificateResource extends Resource
                 TextColumn::make('number')
                     ->sortable()
                     ->searchable()
-                    ->label('Номер'),
+                    ->toggleable()
+                    ->label('Номер заявки'),
                 TextColumn::make('date')
                     ->date('d.m.Y')
                     ->sortable()
@@ -189,6 +190,11 @@ class CertificateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('куда'),
+                TextColumn::make('company.country.short_name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable()
+                    ->label('страна получателя'),
                 TextColumn::make('image')
                     ->label('скан')
                     ->badge()
@@ -368,9 +374,10 @@ class CertificateResource extends Resource
         $user = auth()->user();
 
         if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->orderByDesc('date');
         }
         return parent::getEloquentQuery()
-            ->whereBelongsTo(auth()->user()->expert);
+            ->whereBelongsTo(auth()->user()->expert)
+            ->orderByDesc('date');
     }
 }
