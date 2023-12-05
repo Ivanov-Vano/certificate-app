@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\CertificateResource;
-use App\Models\Certificate;
 use Carbon\Carbon;
 use Filament\Forms\Components\Builder;
 use Filament\Tables\Grouping\Group;
@@ -15,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentToExpertByCurrentMonth extends BaseWidget
 {
+
     protected static ?int $sort = 5;
 
     protected int | string | array $columnSpan = 'full';

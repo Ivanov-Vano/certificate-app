@@ -165,6 +165,10 @@ class CertificateResource extends Resource
                     ->date('d.m.Y')
                     ->sortable()
                     ->label('дата'),
+                TextColumn::make('date')
+                    ->date('M Y')
+                    ->sortable()
+                    ->label('месяц/год'),
                 TextColumn::make('type.short_name')
                     ->sortable()
                     ->searchable()
@@ -176,6 +180,7 @@ class CertificateResource extends Resource
                 TextColumn::make('payer.short_name')
                     ->sortable()
                     ->searchable()
+                    ->toggleable()
                     ->label('плательщик'),
                 TextColumn::make('sender.short_name')
                     ->sortable()
