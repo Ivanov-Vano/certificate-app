@@ -22,6 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
@@ -162,13 +163,13 @@ class CertificateResource extends Resource
                     ->toggleable()
                     ->label('Номер заявки'),
                 TextColumn::make('date')
-                    ->date('d.m.Y')
-                    ->sortable()
-                    ->label('дата'),
-                TextColumn::make('date')
                     ->date('M Y')
                     ->sortable()
                     ->label('месяц/год'),
+                TextColumn::make('date')
+                    ->date('d.m.Y')
+                    ->sortable()
+                    ->label('дата'),
                 TextColumn::make('type.short_name')
                     ->sortable()
                     ->searchable()
@@ -330,6 +331,17 @@ class CertificateResource extends Resource
                     ->preload()
                     ->relationship('expert', 'full_name')
             ])
+            ->groups([
+                Group::make('type.short_name')->label('тип'),
+                Group::make('chamber.short_name')->label('палата'),
+                Group::make('date')
+                    // Настройка сортировки по умолчанию
+                    ->orderQueryUsing(
+                        fn(Builder $query, string $direction) => $query->orderBy('date', 'desc'))
+                    ->label('месяц')
+                    ->getTitleFromRecordUsing(fn (Certificate $record): string => $record->date->format('m Y')),
+            ])
+            ->defaultGroup('date')
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -379,7 +391,7 @@ class CertificateResource extends Resource
         $user = auth()->user();
 
         if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
-            return parent::getEloquentQuery()->orderByDesc('date');
+            return parent::getEloquentQuery()/*->orderByDesc('date')*/;
         }
         return parent::getEloquentQuery()
             ->whereBelongsTo(auth()->user()->expert)
