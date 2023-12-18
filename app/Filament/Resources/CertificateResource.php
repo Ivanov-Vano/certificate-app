@@ -18,6 +18,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -163,10 +164,6 @@ class CertificateResource extends Resource
                     ->toggleable()
                     ->label('Номер заявки'),
                 TextColumn::make('date')
-                    ->date('M Y')
-                    ->sortable()
-                    ->label('месяц/год'),
-                TextColumn::make('date')
                     ->date('d.m.Y')
                     ->sortable()
                     ->label('дата'),
@@ -201,7 +198,7 @@ class CertificateResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->label('страна получателя'),
-                TextColumn::make('image')
+                TextColumn::make('scan_path')
                     ->label('скан')
                     ->badge()
                     ->getStateUsing(fn (Certificate $record): string => $record->scan_path == null ? '' : 'Выдан')
@@ -223,6 +220,9 @@ class CertificateResource extends Resource
                     ->boolean(),
                 IconColumn::make('paid')
                     ->label('счет оплачен')
+/*                    ->summarize(
+                        Count::make()->query(fn (Builder $query) => $query->where('paid', true)),
+                    )*/ // todo Argument #1 ($query) must be of type Illuminate\Database\Eloquent\Builder, Illuminate\Database\Query\Builder given
                     ->boolean(),
                 TextColumn::make('delivery_id')
                     ->label('статус доставки')
@@ -245,7 +245,7 @@ class CertificateResource extends Resource
                     ->label('отредактирована запись')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
             ])
             ->filters([
                 Filter::make('date')

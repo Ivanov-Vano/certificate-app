@@ -36,30 +36,10 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
                     ->summarize(Sum::make()->money('RUB'))
                     ->label('Cтоимость'),
             ])
-//            ->defaultGroup(
             ->groups([
                 Group::make('expert.full_name')
                     ->label('ФИО')
                     ->collapsible(),
-                // Группировка записей по Году и Месяцу (2023-09, 2023-11 etc) вместо поля "Дата"
-/*                Group::make('date')
-                    // Пример: "2023-10-0",
-                    // Примечание:  Необходимо "-0" в конце, так Carbon мог спарсить дату.
-                    ->getKeyFromRecordUsing(
-                        fn(Certificate $record): string => $record->date->format('Y-m-d')
-                    )
-
-                    // Пример: "September 2023"
-                    ->getTitleFromRecordUsing(
-                        fn(Certificate $record): string => $record->date->format('F Y')
-                    )
-
-                    // Настройка сортировки по умолчанию
-                    ->orderQueryUsing(
-                        fn(Builder $query, string $direction) => $query->orderBy('date', 'desc')
-                    )
-                    // Скрыть "Дата:" в заголовке группировки
-                    ->titlePrefixedWithLabel(false),*/
             ])
            ->defaultGroup('expert.full_name')
            ->groupsOnly();

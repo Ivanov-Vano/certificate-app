@@ -4,10 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
-use App\Models\Certificate;
 use App\Models\Delivery;
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -138,6 +137,18 @@ class DeliveryResource extends Resource
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->groups([
+                Group::make('organization.short_name')->label('получатель'),
+                Group::make('deliveryman.full_name')->label('курьер'),
+/*                Group::make('delivered_at')
+                    // Настройка сортировки по умолчанию
+                    ->orderQueryUsing(
+                        fn(Builder $query, string $direction) => $query->orderBy('delivered_at', 'desc'))
+                    ->label('месяц')
+                    ->getTitleFromRecordUsing(fn (Delivery $record): string => $record->delivered_at->format('m Y')), //todo  error format() on string
+            ])
+            ->defaultGroup('delivered_at')*/
             ])
             ->filters([
                 Filter::make('delivered_at')
