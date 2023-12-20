@@ -5,12 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Delivery;
+use App\Models\Organization;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -56,7 +58,12 @@ class DeliveryResource extends Resource
                     ->label('Принято в доставку'),
                 Select::make('organization_id')
                     ->relationship('organization', 'short_name')
+                    ->searchable()
+                    ->preload()
                     ->required()
+                    ->reactive()
+                    ->afterStateUpdated(fn ($state, Forms\Set $set) =>
+                    $set('cost', Organization::find($state)?->delivery_price ?? 0))
                     ->label('Куда доставка'),
                 Select::make('deliverymen_id')
                     ->relationship('deliveryman', 'full_name')
@@ -66,6 +73,7 @@ class DeliveryResource extends Resource
                     ->label('Самовывоз'),
                 TextInput::make('cost')
                     ->numeric()
+                    ->dehydrated()
                     ->readOnly(auth()->user()->hasRole(['Курьер']))
                     ->suffix('руб')
                     ->label('цена доставки'),

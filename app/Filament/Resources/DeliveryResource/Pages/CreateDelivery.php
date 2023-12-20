@@ -59,14 +59,16 @@ class CreateDelivery extends CreateRecord
         $data['accepted_at'] = now();
 
         // подставляем стоимость в зависимости от типа сертфиката
-        $orgId = $data['organization_id'];
+        // (upd) не актуально, так как на форме отрабатывает подстановка
+        // стоимости в зависимости от выбранной организации
+/*        $orgId = $data['organization_id'];
         $priceArr = Organization::query()
             ->select('delivery_price')
             ->whereKey($orgId)
             ->pluck('delivery_price')
             ->toArray();
         $price = array_values($priceArr)[0];
-        $data['cost'] = $price;
+        $data['cost'] = $price;*/
 
         if ($user->hasRole(['Курьер'])) {
             $data['deliveryman_id'] = $user->deliveryman->id;
