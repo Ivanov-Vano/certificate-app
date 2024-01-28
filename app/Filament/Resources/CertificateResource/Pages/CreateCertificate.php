@@ -122,6 +122,8 @@ class CreateCertificate extends CreateRecord
                     Select::make('payer_id')
                         ->relationship('payer', 'short_name')
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             TextInput::make('short_name')
                                 ->maxLength(100)
@@ -135,6 +137,8 @@ class CreateCertificate extends CreateRecord
                     Select::make('sender_id')
                         ->relationship('sender', 'short_name')
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             TextInput::make('short_name')
                                 ->maxLength(100)
@@ -148,6 +152,8 @@ class CreateCertificate extends CreateRecord
                     Select::make('company_id')
                         ->relationship('company', 'short_name')
                         ->required()
+                        ->searchable()
+                        ->preload()
                         ->createOptionForm([
                             Select::make('country_id')
                                 ->relationship('country', 'short_name')

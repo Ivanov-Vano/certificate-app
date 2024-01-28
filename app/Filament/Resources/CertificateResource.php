@@ -64,6 +64,8 @@ class CertificateResource extends Resource
                 Select::make('type_id')
                     ->autofocus()
                     ->relationship('type', 'short_name')
+                    ->searchable()
+                    ->preload()
                     ->required()
                     ->createOptionForm([
                         TextInput::make('short_name')
@@ -77,7 +79,7 @@ class CertificateResource extends Resource
                     ->label('Тип сертификата'),
                 Select::make('chamber_id')
                     ->relationship('chamber', 'short_name')
-                    ->required()
+                    ->searchable()
                     ->createOptionForm([
                         TextInput::make('short_name')
                             ->maxLength(100)
@@ -90,6 +92,8 @@ class CertificateResource extends Resource
                     ->label('Торгово-промышленная палата'),
                 Select::make('payer_id')
                     ->relationship('payer', 'short_name')
+                    ->searchable()
+                    ->preload()
                     ->required()
                     ->createOptionForm([
                         TextInput::make('short_name')
@@ -103,6 +107,8 @@ class CertificateResource extends Resource
                     ->label('Организация (плательщик)'),
                 Select::make('sender_id')
                     ->relationship('sender', 'short_name')
+                    ->searchable()
+                    ->preload()
                     ->required()
                     ->createOptionForm([
                         TextInput::make('short_name')
@@ -117,6 +123,8 @@ class CertificateResource extends Resource
                 Select::make('company_id')
                     ->relationship('company', 'short_name')
                     ->required()
+                    ->searchable()
+                    ->preload()
                     ->createOptionForm([
                         Select::make('country_id')
                             ->relationship('country', 'short_name')
