@@ -239,13 +239,26 @@ class CertificateResource extends Resource
                     ->label('эксперт'),
                 IconColumn::make('invoice_issued')
                     ->label('счет выставлен')
-                    ->boolean(),
+                    ->boolean()
+                    ->action(function($record, $column) {
+                        $name = $column->getName();
+                        $record->update([
+                            $name => !$record->$name
+                        ]);
+                    }),
+
                 IconColumn::make('paid')
                     ->label('счет оплачен')
 /*                    ->summarize(
                         Count::make()->query(fn (Builder $query) => $query->where('paid', true)),
                     )*/ // todo Argument #1 ($query) must be of type Illuminate\Database\Eloquent\Builder, Illuminate\Database\Query\Builder given
-                    ->boolean(),
+                    ->boolean()
+                    ->action(function($record, $column) {
+                        $name = $column->getName();
+                        $record->update([
+                            $name => !$record->$name
+                        ]);
+                    }),
                 TextColumn::make('delivery_id')
                     ->label('статус доставки')
                     ->badge()
