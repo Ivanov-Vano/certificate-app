@@ -6,6 +6,7 @@ use App\Models\Chamber;
 use App\Models\Company;
 use App\Models\Expert;
 use App\Models\Organization;
+use App\Models\Sign;
 use App\Models\Type;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -35,6 +36,7 @@ class CertificateFactory extends Factory
             'scan_path' => $this->faker->sentence,
             'cost' => $this->faker->randomFloat(2, 1, 99999999),
             'number' => '2023/00'.$this->faker->numberBetween(10,99),
+            'sign_id' => Sign::all()->random()->id,
         ];
     }
 }

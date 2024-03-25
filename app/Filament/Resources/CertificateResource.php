@@ -77,6 +77,16 @@ class CertificateResource extends Resource
                             ->label('Полное наименование'),
                     ])
                     ->label('Тип сертификата'),
+                Select::make('sign_id')
+                    ->relationship('sign', 'name')
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->maxLength(255)
+                            ->required()
+                            ->label('Наименование'),
+                    ])
+                    ->label('Признак сертификата'),
                 Select::make('chamber_id')
                     ->relationship('chamber', 'short_name')
                     ->searchable()
@@ -179,6 +189,10 @@ class CertificateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('сертификат'),
+                TextColumn::make('sign.name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('признак'),
                 TextColumn::make('chamber.short_name')
                     ->sortable()
                     ->searchable()
@@ -311,6 +325,10 @@ class CertificateResource extends Resource
                     ->multiple()
                     ->preload()
                     ->relationship('type', 'short_name'),
+                SelectFilter::make('sign_id')
+                    ->label('Признак сертификата')
+                    ->preload()
+                    ->relationship('sign', 'name'),
                 SelectFilter::make('chamber_id')
                     ->label('Палата')
                     ->multiple()

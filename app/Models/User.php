@@ -56,7 +56,7 @@ class User extends Authenticatable
         return $this->belongsTo(Deliveryman::class, 'deliveryman_id')->withDefault();
     }
 
-    public function canAccessFilament(): bool
+    public function canAccessPanel(): bool
     {
         return true;
     }

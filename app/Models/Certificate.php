@@ -60,6 +60,10 @@ class Certificate extends Model
     {
         return $this->belongsTo(Type::class);
     }
+    public function sign(): BelongsTo
+    {
+        return $this->belongsTo(Sign::class);
+    }
     public function delivery(): BelongsTo
     {
         return $this->belongsTo(Delivery::class);

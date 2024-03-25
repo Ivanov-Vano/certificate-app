@@ -85,7 +85,7 @@ class CreateCertificate extends CreateRecord
         return [
             Step::make('first')
                 ->label('первый шаг')
-                ->description('Выберите тип сертификата и палату')
+                ->description('Выберите тип, признак и палату')
                 ->schema([
                     Select::make('type_id')
                         ->autofocus()
@@ -101,6 +101,16 @@ class CreateCertificate extends CreateRecord
                                 ->label('Полное наименование'),
                         ])
                         ->label('Тип сертификата'),
+                    Select::make('sign_id')
+                        ->relationship('sign', 'name')
+                        ->required()
+                        ->createOptionForm([
+                            TextInput::make('name')
+                                ->maxLength(255)
+                                ->required()
+                                ->label('Наименование'),
+                        ])
+                        ->label('Признак сертификата'),
                     Select::make('chamber_id')
                         ->relationship('chamber', 'short_name')
                         ->required()
