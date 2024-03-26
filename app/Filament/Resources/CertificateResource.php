@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CertificateResource\Pages;
 use App\Models\Certificate;
 use Carbon\Carbon;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
@@ -317,6 +318,39 @@ class CertificateResource extends Resource
                         return $indicators;
                     }),
 
+                Filter::make('delivery_id')
+                    ->label('Доставка')
+                    ->form([
+                        Checkbox::make('is_delivered')
+                            ->label('доставлено'),
+                        Checkbox::make('is_not_delivered')
+                            ->label('не доставлено'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['is_delivered'],
+                                fn (Builder $query): Builder =>  $query->whereNotNull('delivery_id')
+                            )
+                            ->when(
+                                $data['is_not_delivered'],
+                                fn (Builder $query): Builder => $query->orWhereNull('delivery_id')
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['is_delivered'] ?? null) {
+                            $indicators[] = Indicator::make('доставлено')
+                                ->removeField('is_delivered');
+                        }
+
+                        if ($data['is_not_delivered'] ?? null) {
+                            $indicators[] = Indicator::make('не доставлено')
+                                ->removeField('is_not_delivered');
+                        }
+                        return $indicators;
+                    }),
                 Filter::make('scan_path')
                     ->toggle()
                     ->label('Скан отправлен')
@@ -329,10 +363,6 @@ class CertificateResource extends Resource
                     ->toggle()
                     ->label('Счет оплачен')
                     ->query(fn (Builder $query): Builder => $query->where('paid', true)),
-                Filter::make('delivery_id')
-                    ->toggle()
-                    ->label('Доставлен')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('delivery_id')),
                 SelectFilter::make('type_id')
                     ->label('Тип сертификата')
                     ->multiple()
