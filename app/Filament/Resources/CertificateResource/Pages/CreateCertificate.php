@@ -103,7 +103,6 @@ class CreateCertificate extends CreateRecord
                         ->label('Тип сертификата'),
                     Select::make('sign_id')
                         ->relationship('sign', 'name')
-                        ->required()
                         ->createOptionForm([
                             TextInput::make('name')
                                 ->maxLength(255)

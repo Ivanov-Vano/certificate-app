@@ -65,7 +65,7 @@ class DeliveryResource extends Resource
                     ->afterStateUpdated(fn ($state, Forms\Set $set) =>
                     $set('cost', Organization::find($state)?->delivery_price ?? 0))
                     ->label('Куда доставка'),
-                Select::make('deliverymen_id')
+                Select::make('deliveryman_id')
                     ->relationship('deliveryman', 'full_name')
                     ->hidden(auth()->user()->hasRole(['Курьер']))
                     ->label('Курьер ФИО'),
