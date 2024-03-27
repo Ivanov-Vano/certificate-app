@@ -263,7 +263,7 @@ class CertificateResource extends Resource
                 TextColumn::make('delivery_id')
                     ->label('статус доставки')
                     ->badge()
-                    ->getStateUsing(fn (Certificate $record): string => $record->delivery_id == null ? '' : 'Доставлен')
+                    ->getStateUsing(fn (Certificate $record): string => $record->delivery_id !== null ? '' : 'Доставлен')
                     ->colors([
                         'success' => 'Доставлен',
                     ]),
