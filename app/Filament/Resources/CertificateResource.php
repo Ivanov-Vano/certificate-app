@@ -263,9 +263,32 @@ class CertificateResource extends Resource
                 TextColumn::make('delivery_id')
                     ->label('статус доставки')
                     ->badge()
-                    ->getStateUsing(fn (Certificate $record): string => $record->delivery_id !== null ? '' : 'Доставлен')
+                    ->getStateUsing(function (Certificate $record): string {
+                        // Проверяем, связана ли запись Certificate с Delivery
+                        if ($record->delivery_id === null) {
+                            // Если delivery_id не установлен, значит доставка не назначена
+                            return 'Не доставлен';
+                        }
+
+                        // Получаем связанную запись Delivery
+                        $delivery = $record->delivery;
+
+                        // Проверяем, была ли доставка выполнена
+                        if ($delivery && $delivery->delivered_at) {
+                            // Если установлено delivered_at, значит доставка завершена
+                            return 'Доставлен';
+                        } elseif ($delivery && $delivery->accepted_at) {
+                            // Если установлено accepted_at, но не delivered_at, значит доставка в процессе
+                            return 'В процессе';
+                        } else {
+                            // Если ни одно из условий не выполнено, значит доставка не назначена
+                            return 'Не доставлен';
+                        }
+                    })
                     ->colors([
-                        'success' => 'Доставлен',
+                        'success' => 'Доставлен',    // Зеленый цвет для статуса "Доставлен"
+                        'warning' => 'В процессе',   // Желтый цвет для статуса "В процессе"
+                        'danger' => 'Не доставлен',  // Красный цвет для статуса "Не доставлен"
                     ]),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
