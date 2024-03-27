@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -412,6 +413,46 @@ class CertificateResource extends Resource
             ->defaultGroup('date')
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ReplicateAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title('Копирование сертификата')
+                            ->body('Заявка на сертификат была скопирована успешно!'),
+                    ),
+/*                    ->excludeAttributes(['number', 'date'])
+                    ->mutateRecordDataUsing(function (array $data): array {
+                        $user = auth()->user();
+                        $year = now()->format('Y');
+
+                        // генерируем новый номер заявки
+                        // формат номера: 20ХХ/ХХХХ
+                        $lastNumber = Certificate::query()->select('number')->orderBy('number')->get();
+                        $last = $lastNumber->pluck('number')->last();
+                        $last = $last ?? $year.'/0001';   //если пусто, то первый номер: 20ХХ/0001
+                        $number = (substr($last,(strpos($last, '/')+1)) + 1);
+                        switch (strlen($number)) {
+                            case 1:
+                                $number = '000'.$number;
+                                break;
+                            case 2:
+                                $number = '00'.$number;
+                                break;
+                            case 3:
+                                $number = '0'.$number;
+                                break;
+                            case 4:
+                                $number = ''.$number;
+                                break;
+                        }
+                        $number = $year.'/'.$number;
+                        $data['number'] = $number;
+
+                        // генерируем дату заявки
+                        $data['date'] = now();
+
+                        return $data;
+                    }),*/
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

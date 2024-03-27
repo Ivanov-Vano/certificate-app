@@ -16,6 +16,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Forms\Components\Wizard;
+use Filament\Tables\Actions\ReplicateAction;
 use function Laravel\Prompts\select;
 
 class CreateCertificate extends CreateRecord
@@ -28,6 +29,7 @@ class CreateCertificate extends CreateRecord
     {
         return 'Создана новая заявка на сертификат';
     }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
