@@ -45,11 +45,15 @@ class CertificateResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $user = auth()->user();
-        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
-            return static::getModel()::count();
+        $query = parent::getEloquentQuery();
+
+        if ($user->hasAnyRole(['Представитель палаты', 'Эксперт'])) {
+            $relatedModel = $user->hasRole('Представитель палаты') ? $user->chamber : $user->expert;
+            $query->whereBelongsTo($relatedModel)->count();
+        } elseif (!$user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            // любые дополнительные ограничения для пользователей без необходимых ролей
         }
-        return static::getEloquentQuery()
-            ->whereBelongsTo(auth()->user()->expert)->count();
+        return $query->count();
     }
 
     public static function form(Form $form): Form
@@ -561,12 +565,15 @@ class CertificateResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
+        $query = parent::getEloquentQuery()->orderByDesc('date');
 
-        if ($user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
-            return parent::getEloquentQuery()/*->orderByDesc('date')*/;
+        if ($user->hasAnyRole(['Представитель палаты', 'Эксперт'])) {
+            $relatedModel = $user->hasRole('Представитель палаты') ? $user->chamber : $user->expert;
+            $query->whereBelongsTo($relatedModel);
+        } elseif (!$user->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
+            // любые дополнительные ограничения для пользователей без необходимых ролей
         }
-        return parent::getEloquentQuery()
-            ->whereBelongsTo(auth()->user()->expert)
-            ->orderByDesc('date');
+
+        return $query;
     }
 }

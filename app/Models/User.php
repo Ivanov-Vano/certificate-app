@@ -24,7 +24,9 @@ class User extends Authenticatable
         'email',
         'password',
         'username',
-        'expert_id'
+        'expert_id',
+        'deliveryman_id',
+        'chamber_id',
     ];
 
     /**
@@ -54,6 +56,11 @@ class User extends Authenticatable
     public function deliveryman()
     {
         return $this->belongsTo(Deliveryman::class, 'deliveryman_id')->withDefault();
+    }
+
+    public function chamber()
+    {
+        return $this->belongsTo(Chamber::class, 'chamber_id')->withDefault();
     }
 
     public function canAccessPanel(): bool
