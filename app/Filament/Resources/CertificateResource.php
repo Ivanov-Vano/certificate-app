@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CertificateResource\Pages;
 use App\Models\Certificate;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
@@ -20,7 +21,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -28,6 +28,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
@@ -175,38 +176,59 @@ class CertificateResource extends Resource
 
     public static function table(Table $table): Table
     {
+        //получаем роль пользователя
+        $roleName = auth()->user()->getRoleNames()->first();
+
+        //пытаемся получить настройки из кэша (Значение кэшируется на 60 минут)
+        $settings = Cache::remember('settings_'.$roleName, 60, function () use ($roleName) {
+            //Если настроек не в кэше, загружаем их из базы данных
+            return Setting::where('role_name', $roleName)->first()->columns_visibility ?? [];
+        });
+
         return $table
             ->columns([
                 TextColumn::make('number')
                     ->sortable()
                     ->searchable()
-                    ->toggleable()
-                    ->label('Номер заявки'),
+                    ->visible(in_array('certificate_number', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_number', $settings))// проверка на присутствие в настройках
+                    ->label('номер заявки'),
                 TextColumn::make('date')
                     ->date('d.m.Y')
                     ->sortable()
+                    ->visible(in_array('certificate_date', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_date', $settings))// проверка на присутствие в настройках
                     ->label('дата'),
                 TextColumn::make('type.short_name')
                     ->sortable()
                     ->searchable()
-                    ->label('сертификат'),
+                    ->visible(in_array('certificate_type_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_type_short_name', $settings))// проверка на присутствие в настройках
+                    ->label('тип сертификата'),
                 TextColumn::make('sign.name')
                     ->sortable()
+                    ->visible(in_array('certificate_sign_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_sign_name', $settings))// проверка на присутствие в настройках
                     ->searchable()
                     ->label('признак'),
                 TextColumn::make('chamber.short_name')
                     ->sortable()
+                    ->visible(in_array('certificate_chamber_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_chamber_short_name', $settings))// проверка на присутствие в настройках
                     ->searchable()
                     ->label('палата'),
                 TextColumn::make('payer.short_name')
                     ->sortable()
                     ->searchable()
-                    ->toggleable()
+                    ->visible(in_array('certificate_payer_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_payer_short_name', $settings))// проверка на присутствие в настройках
                     ->label('плательщик'),
                 TextColumn::make('sender.short_name')
                     ->sortable()
                     ->searchable()
                     ->words(1)
+                    ->visible(in_array('certificate_sender_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_sender_short_name', $settings))// проверка на присутствие в настройках
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return $state;
@@ -215,15 +237,20 @@ class CertificateResource extends Resource
                 TextColumn::make('company.short_name')
                     ->sortable()
                     ->searchable()
+                    ->visible(in_array('certificate_company_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_company_short_name', $settings))// проверка на присутствие в настройках
                     ->label('куда'),
                 TextColumn::make('company.country.short_name')
                     ->sortable()
                     ->searchable()
-                    ->toggleable()
+                    ->visible(in_array('certificate_company_country_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_company_country_short_name', $settings))// проверка на присутствие в настройках
                     ->label('страна получателя'),
                 TextColumn::make('scan_path')
                     ->label('скан')
                     ->badge()
+                    ->visible(in_array('certificate_scan_path', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_scan_path', $settings))// проверка на присутствие в настройках
                     ->getStateUsing(fn (Certificate $record): string => $record->scan_path == null ? '' : 'Выдан')
                     ->colors([
                         'success' => 'Выдан',
@@ -231,7 +258,9 @@ class CertificateResource extends Resource
                 TextColumn::make('expert.full_name')
                     ->sortable()
                     ->searchable()
-                    ->hidden(auth()->user()->hasRole(['Эксперт']))
+//                    ->hidden(auth()->user()->hasRole(['Эксперт']))
+                    ->visible(in_array('certificate_expert_full_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_expert_full_name', $settings))// проверка на присутствие в настройках
                     ->words(1)
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
@@ -241,6 +270,8 @@ class CertificateResource extends Resource
                 IconColumn::make('invoice_issued')
                     ->label('счет выставлен')
                     ->boolean()
+                    ->visible(in_array('certificate_invoice_issued', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_invoice_issued', $settings))// проверка на присутствие в настройках
                     ->action(function($record, $column) {
                         $name = $column->getName();
                         $record->update([
@@ -254,6 +285,8 @@ class CertificateResource extends Resource
                         Count::make()->query(fn (Builder $query) => $query->where('paid', true)),
                     )*/ // todo Argument #1 ($query) must be of type Illuminate\Database\Eloquent\Builder, Illuminate\Database\Query\Builder given
                     ->boolean()
+                    ->visible(in_array('certificate_paid', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_paid', $settings))// проверка на присутствие в настройках
                     ->action(function($record, $column) {
                         $name = $column->getName();
                         $record->update([
@@ -263,6 +296,8 @@ class CertificateResource extends Resource
                 TextColumn::make('delivery_id')
                     ->label('статус доставки')
                     ->badge()
+                    ->visible(in_array('certificate_delivery_id', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_delivery_id', $settings))// проверка на присутствие в настройках
                     ->getStateUsing(function (Certificate $record): string {
                         // Проверяем, связана ли запись Certificate с Delivery
                         if ($record->delivery_id === null) {
@@ -292,19 +327,24 @@ class CertificateResource extends Resource
                     ]),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
-                    ->toggleable(isToggledHiddenByDefault: true)
+//                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(in_array('certificate_deleted_at', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_deleted_at', $settings))// проверка на присутствие в настройках
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('создана запись')
                     ->dateTime('d.m.Y H:i:s')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->visible(in_array('certificate_created_at', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_created_at', $settings))// проверка на присутствие в настройках
+//                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label('отредактирована запись')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(in_array('certificate_updated_at', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_updated_at', $settings))// проверка на присутствие в настройках
             ])
             ->filters([
                 Filter::make('date')

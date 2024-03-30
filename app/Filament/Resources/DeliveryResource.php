@@ -6,6 +6,7 @@ use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Delivery;
 use App\Models\Organization;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -25,6 +26,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class DeliveryResource extends Resource
 {
@@ -84,13 +86,24 @@ class DeliveryResource extends Resource
 
     public static function table(Table $table): Table
     {
+        //получаем роль пользователя
+        $roleName = auth()->user()->getRoleNames()->first();
+
+        //пытаемся получить настройки из кэша (Значение кэшируется на 60 минут)
+        $settings = Cache::remember('settings_'.$roleName, 60, function () use ($roleName) {
+            //Если настроек не в кэше, загружаем их из базы данных
+            return Setting::where('role_name', $roleName)->first()->columns_visibility ?? [];
+        });
+
         return $table
             ->striped()
             ->columns([
                 TextColumn::make('number')
                     ->sortable()
                     ->searchable()
-                    ->label('Номер'),
+                    ->visible(in_array('delivery_number', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_number', $settings))// проверка на присутствие в настройках
+                    ->label('номер доставки'),
                 TextColumn::make('accepted_at')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
@@ -98,53 +111,70 @@ class DeliveryResource extends Resource
                     ->tooltip(function (TextColumn $column): ?string {
                         return $column->getState();
                     })
-                    ->toggleable()
-                    ->label('Принято в доставку'),
+                    ->visible(in_array('delivery_accepted_at', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_accepted_at', $settings))// проверка на присутствие в настройках
+                    ->label('принято в доставку'),
                 TextColumn::make('organization.short_name')
                     ->sortable()
                     ->searchable()
                     ->description(fn (Delivery $record): string => $record->organization->address)
-                    ->label('Куда'),
+                    ->visible(in_array('delivery_organization_short_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_organization_short_name', $settings))// проверка на присутствие в настройках
+                    ->label('получатель'),
                 TextColumn::make('deliveryman.full_name')
                     ->sortable()
                     ->searchable()
-                    ->hidden(auth()->user()->hasRole(['Курьер']))
+//                    ->hidden(auth()->user()->hasRole(['Курьер']))
+                    ->visible(in_array('delivery_deliveryman_full_name', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_deliveryman_full_name', $settings))// проверка на присутствие в настройках
                     ->words(1)
                     ->tooltip(function (TextColumn $column): ?string {
                         return $column->getState();
                     })
-                    ->label('Курьер'),
+                    ->label('курьер'),
                 TextColumn::make('cost')
+                    ->visible(in_array('delivery_cost', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_cost', $settings))// проверка на присутствие в настройках
                     ->summarize(Sum::make()->money('RUB'))
-                    ->label('Cтоимость'),
+                    ->label('стоимость'),
                 TextColumn::make('certificates_count')
                     ->counts('certificates')
-                    ->label('Количество передаваемых сертификатов'),
+                    ->visible(in_array('delivery_certificates_count', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_certificates_count', $settings))// проверка на присутствие в настройках
+                    ->label('количество передаваемых сертификатов'),
                 IconColumn::make('is_pickup')
-                    ->label('Самовывоз')
+                    ->label('самовывоз')
                     ->boolean()
+                    ->visible(in_array('delivery_is_pickup', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_is_pickup', $settings))// проверка на присутствие в настройках
                     ->summarize(
                         Count::make()->icons()),
                 TextColumn::make('delivered_at')
-                    ->label('Дата и время доставки')
+                    ->label('дата и время доставки')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
-                    ->toggleable(),
+                    ->visible(in_array('delivery_delivered_at', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('delivery_delivered_at', $settings))// проверка на присутствие в настройках
+                    ->sortable(),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
-                    ->toggleable(isToggledHiddenByDefault: true)
+//                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(in_array('certificate_number', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_number', $settings))// проверка на присутствие в настройках
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('создана запись')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->visible(in_array('certificate_number', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_number', $settings)),
                 TextColumn::make('updated_at')
                     ->label('отредактирована запись')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->visible(in_array('certificate_number', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_number', $settings)),
             ])
             ->groups([
                 Group::make('organization.short_name')->label('получатель'),

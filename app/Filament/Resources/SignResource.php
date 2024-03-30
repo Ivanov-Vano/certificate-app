@@ -21,7 +21,7 @@ class SignResource extends Resource
 {
     protected static ?string $model = Sign::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-information-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-code-bracket-square';
 
     protected static ?string $modelLabel = 'признак сертификата';
 

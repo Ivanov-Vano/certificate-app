@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             DeliverymanSeeder::class,
             UserSeeder::class,
             RolesAndPermissionsSeeder::class,
+            SettingSeeder::class,
             ChamberSeeder::class,
             CountrySeeder::class,
             CompanySeeder::class,

@@ -97,9 +97,47 @@ class RolesAndPermissionsSeeder extends Seeder
         $deliverymanPermission6 = Permission::create(['name' => 'восстановление: курьер']);
         $deliverymanPermission7 = Permission::create(['name' => 'безвозвратное удаление: курьер']);
 
+        //setting model
+        $settingPermission1 = Permission::create(['name' => 'просмотр всех: настройка']);
+        $settingPermission2 = Permission::create(['name' => 'просмотр: настройка']);
+        $settingPermission3 = Permission::create(['name' => 'создание: настройка']);
+        $settingPermission4 = Permission::create(['name' => 'изменение: настройка']);
+        $settingPermission5 = Permission::create(['name' => 'удаление: настройка']);
+        $settingPermission6 = Permission::create(['name' => 'восстановление: настройка']);
+        $settingPermission7 = Permission::create(['name' => 'безвозвратное удаление: настройка']);
+
 
         //CREATE ROLES (создание ролей)
-        $userRole = Role::create(['name' => 'Эксперт'])->syncPermissions([
+        $expertRole = Role::create(['name' => 'Эксперт'])->syncPermissions([
+            $certificatePermission1,
+            $certificatePermission2,
+            $certificatePermission3,
+            $certificatePermission4,
+            $certificatePermission5,
+            $organizationPermission1,
+            $organizationPermission2,
+            $organizationPermission3,
+            $organizationPermission4,
+            $organizationPermission5,
+            $companyPermission1,
+            $companyPermission2,
+            $companyPermission3,
+            $companyPermission4,
+            $companyPermission5,
+            $typePermission1,
+            $typePermission2,
+            $typePermission3,
+            $typePermission4,
+            $typePermission5,
+            $chamberPermission1,
+            $chamberPermission2,
+            $chamberPermission3,
+            $chamberPermission4,
+            $chamberPermission5,
+            $chamberPermission6,
+            $chamberPermission7,
+        ]);
+        $chamberRole = Role::create(['name' => 'Представитель палаты'])->syncPermissions([
             $certificatePermission1,
             $certificatePermission2,
             $certificatePermission3,
@@ -171,6 +209,11 @@ class RolesAndPermissionsSeeder extends Seeder
             $organizationPermission5,
             $organizationPermission6,
             $organizationPermission7,
+            $settingPermission1,
+            $settingPermission2,
+            $settingPermission3,
+            $settingPermission4,
+            $settingPermission5,
         ]);
         $adminRole = Role::create(['name' => 'Администратор'])->syncPermissions([
             $certificatePermission1,
@@ -229,6 +272,13 @@ class RolesAndPermissionsSeeder extends Seeder
             $deliveryPermission5,
             $deliveryPermission6,
             $deliveryPermission7,
+            $settingPermission1,
+            $settingPermission2,
+            $settingPermission3,
+            $settingPermission4,
+            $settingPermission5,
+            $settingPermission6,
+            $settingPermission7,
         ]);
         $courierRole = Role::create(['name' => 'Курьер'])->syncPermissions([
             $certificatePermission1,
@@ -284,7 +334,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'username' => 'пользователь'.$i,
                 'name' => 'пользователь'.$i,
              //   'expert_id' => Expert::all()->random()->id,
-            ])->assignRole($userRole);
+            ])->assignRole($expertRole);
         }
         for ($i=1; $i <3; $i++) {
             User::create([
@@ -297,6 +347,18 @@ class RolesAndPermissionsSeeder extends Seeder
                 'name' => 'курьер'.$i,
               //  'deliveryman_id' => Delivery::all()->random()->id,
             ])->assignRole($courierRole);
+        }
+        for ($i=1; $i <3; $i++) {
+            User::create([
+                'email' => 'chamber'.$i.'@mail.ru',
+                'email_verified_at' => now(),
+                'password' => '$2y$10$R5vBPe6dfxDQevMtpH6pmetk3B0oyACoFU7RvLkz8EhUE4u99.r.O', // password 12345678
+                'remember_token' => Str::random(10),
+                'is_admin' => '0',
+                'username' => 'представитель палаты'.$i,
+                'name' => 'представитель палаты'.$i,
+                //  'deliveryman_id' => Delivery::all()->random()->id,
+            ])->assignRole($chamberRole);
         }
 
     }
