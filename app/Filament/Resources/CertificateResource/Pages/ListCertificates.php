@@ -15,19 +15,20 @@ class ListCertificates extends ListRecords
 
     public function getTabs(): array
     {
+        $query = CertificateResource::getEloquentQuery();
         return [
             'all' => Tab::make('Все сертификаты'),
             'scan_issued' => Tab::make('Сканы не отправлены')
-                ->badge(Certificate::query()->whereNull('scan_path')->count())
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('scan_issued', false)),
+                ->badge($query->whereNull('scan_path')->count())
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('scan_path')),
             'invoice_issued' => Tab::make('Счета не выставлены')
-                ->badge(Certificate::query()->where('invoice_issued', false)->count())
+                ->badge($query->where('invoice_issued', false)->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('invoice_issued', false)),
             'paid' => Tab::make('Счета не оплачены')
-                ->badge(Certificate::query()->where('paid', false)->count())
+                ->badge($query->where('paid', false)->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('paid', false)),
             'delivery_id' => Tab::make('Сертификаты не доставлены')
-                ->badge(Certificate::query()->whereNull('delivery_id')->count())
+                ->badge($query->whereNull('delivery_id')->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNull('delivery_id')),
         ];
     }
