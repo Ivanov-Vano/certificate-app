@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CertificateResource\Pages;
 use App\Filament\Resources\CertificateResource;
 use App\Models\Certificate;
 use App\Models\Delivery;
+use App\Models\Deliveryman;
 use App\Models\Type;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -97,11 +98,19 @@ class EditCertificate extends EditRecord
                     }
                     $number = $number.'-'.$year;
 
+                    //получаем идентификатор курьер, если он один в базе
+                    $count = Deliveryman::query()->count();
+                    $deliveryman = null;
+                    if ($count === 1) {
+                        $deliveryman = Deliveryman::value('id');
+                    }
+
                     // Создаем новую запись Delivery с присвоением значения organization_id равным payer_id текущей записи Certificate
                     $delivery = new Delivery();
                     $delivery->organization_id = $record->payer_id;
                     $delivery->number = $number;
                     $delivery->accepted_at = now();
+                    $delivery->deliveryman_id = $deliveryman;
 
                     // Получаем значение delivery_price из модели Organization через связь organization модели Delivery
                     $delivery->cost = $delivery->organization->delivery_price;
