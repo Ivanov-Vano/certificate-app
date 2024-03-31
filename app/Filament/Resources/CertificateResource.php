@@ -572,7 +572,7 @@ class CertificateResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $user = auth()->user();
-        $query = parent::getEloquentQuery()->orderByDesc('date');
+        $query = parent::getEloquentQuery()/*->orderByDesc('date')*/;
 
         if ($user->hasAnyRole(['Представитель палаты', 'Эксперт'])) {
             $relatedModel = $user->hasRole('Представитель палаты') ? $user->chamber : $user->expert;
