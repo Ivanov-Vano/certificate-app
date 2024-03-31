@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\DeliveryResource\Actions\SetDeliveredAtDate;
 use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Filament\Resources\Traits\HasTags;
@@ -17,6 +18,7 @@ use Filament\Forms\Form;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -244,7 +246,8 @@ class DeliveryResource extends Resource
                 self::tagsFilter()
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ViewAction::make(),
+                SetDeliveredAtDate::make()->name('set_delivered_at_date')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -266,6 +269,7 @@ class DeliveryResource extends Resource
         return [
             'index' => Pages\ListDeliveries::route('/'),
             'create' => Pages\CreateDelivery::route('/create'),
+            'view' => Pages\ViewDelivery::route('/{record}'),
             'edit' => Pages\EditDelivery::route('/{record}/edit'),
         ];
     }
