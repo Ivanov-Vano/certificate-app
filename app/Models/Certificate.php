@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Certificate extends Model
@@ -68,4 +70,12 @@ class Certificate extends Model
     {
         return $this->belongsTo(Delivery::class);
     }
+    /**
+     * Получить все теги для сертификатов.
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, 'taggable')->withTimestamps();
+    }
+
 }

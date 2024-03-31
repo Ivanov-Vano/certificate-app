@@ -74,10 +74,10 @@ class SettingSeeder extends Seeder
         ];
 
         //Setting model
-        Setting::create(['role_name' => 'Эксперт', 'columns_visibility' => array_diff(self::ALL_PARAMETRS_VISIBILITY, $expertColumnsToExclude)]);
-        Setting::create(['role_name' => 'Представитель палаты', 'columns_visibility' => array_diff(self::ALL_PARAMETRS_VISIBILITY, $chamberColumnsToExclude)]);
-        Setting::create(['role_name' => 'Руководитель', 'columns_visibility' => array_diff(self::ALL_PARAMETRS_VISIBILITY, $chiefColumnsToExclude)]);
+        Setting::create(['role_name' => 'Эксперт', 'columns_visibility' =>array_values(array_diff(self::ALL_PARAMETRS_VISIBILITY, $expertColumnsToExclude))]);
+        Setting::create(['role_name' => 'Представитель палаты', 'columns_visibility' =>array_values(array_diff(self::ALL_PARAMETRS_VISIBILITY, $chamberColumnsToExclude))]);
+        Setting::create(['role_name' => 'Руководитель', 'columns_visibility' =>array_values(array_diff(self::ALL_PARAMETRS_VISIBILITY, $chiefColumnsToExclude))]);
         Setting::create(['role_name' => 'Администратор', 'columns_visibility' => self::ALL_PARAMETRS_VISIBILITY]);
-        Setting::create(['role_name' => 'Курьер', 'columns_visibility' => array_diff(self::ALL_PARAMETRS_VISIBILITY, $courierColumnsToExclude)]);
+        Setting::create(['role_name' => 'Курьер', 'columns_visibility' =>array_values(array_diff(self::ALL_PARAMETRS_VISIBILITY, $courierColumnsToExclude))]);
     }
 }

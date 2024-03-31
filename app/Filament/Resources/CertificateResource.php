@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CertificateResource\Pages;
+use App\Filament\Resources\Traits\HasTags;
 use App\Models\Certificate;
 use App\Models\Setting;
 use Carbon\Carbon;
@@ -34,6 +35,8 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 class CertificateResource extends Resource
 {
+    use HasTags;
+
     protected static ?string $model = Certificate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
@@ -163,6 +166,7 @@ class CertificateResource extends Resource
                 TextInput::make('extended_page')
                     ->numeric()
                     ->label('Дополнительные листы'),
+                self::formTagsField(),
                 FileUpload::make('scan_path')
                     ->directory('attachments')
                     ->openable()
@@ -329,6 +333,7 @@ class CertificateResource extends Resource
                         'warning' => 'В процессе',   // Желтый цвет для статуса "В процессе"
                         'danger' => 'Не доставлен',  // Красный цвет для статуса "Не доставлен"
                     ]),
+                self::tagsColumn(),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
 //                    ->toggleable(isToggledHiddenByDefault: true)
@@ -465,7 +470,8 @@ class CertificateResource extends Resource
                     ->label('Эксперт')
                     ->multiple()
                     ->preload()
-                    ->relationship('expert', 'full_name')
+                    ->relationship('expert', 'full_name'),
+                self::tagsFilter()
             ])
             ->groups([
                 Group::make('type.short_name')->label('тип'),
@@ -527,6 +533,7 @@ class CertificateResource extends Resource
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                     ExportBulkAction::make(),
+                    self::changeTagsAction(),
 /*                    BulkAction::make('updateDelivery')
                         ->form([
                             Select::make('delivery_id')

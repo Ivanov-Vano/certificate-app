@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
+use App\Filament\Resources\Traits\HasTags;
 use App\Models\Delivery;
 use App\Models\Organization;
 use App\Models\Setting;
@@ -30,6 +31,8 @@ use Illuminate\Support\Facades\Cache;
 
 class DeliveryResource extends Resource
 {
+    use HasTags;
+
     protected static ?string $model = Delivery::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
@@ -81,6 +84,7 @@ class DeliveryResource extends Resource
                     ->label('цена доставки'),
                 DatePicker::make('delivered_at')
                     ->label('Доставлено'),
+                self::formTagsField(),
             ]);
     }
 
@@ -156,6 +160,7 @@ class DeliveryResource extends Resource
                     ->visible(in_array('delivery_delivered_at', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('delivery_delivered_at', $settings))// проверка на присутствие в настройках
                     ->sortable(),
+                self::tagsColumn(),
                 TextColumn::make('deleted_at')
                     ->label('удалена запись')
 //                    ->toggleable(isToggledHiddenByDefault: true)
@@ -235,13 +240,15 @@ class DeliveryResource extends Resource
                     ->label('Эксперт')
                     ->multiple()
                     ->preload()
-                    ->relationship('deliveryman', 'full_name')
+                    ->relationship('deliveryman', 'full_name'),
+                self::tagsFilter()
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    self::changeTagsAction(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

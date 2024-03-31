@@ -52,7 +52,7 @@ class SettingResource extends Resource
                                         'certificate_payer_short_name' => 'плательщик',
                                         'certificate_sender_short_name' => 'откуда',
                                         'certificate_company_short_name' => 'куда',
-                                        'certificate_company_country_short_name' => 'Номер',
+                                        'certificate_company_country_short_name' => 'страна получателя',
                                         'certificate_scan_path' => 'скан',
                                         'certificate_expert_full_name' => 'эксперт',
                                         'certificate_invoice_issued' => 'счет выставлен',
