@@ -26,12 +26,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Tables\Grouping\Group;
 
 class CertificateResource extends Resource
 {
@@ -87,15 +87,6 @@ class CertificateResource extends Resource
                             ->label('Полное наименование'),
                     ])
                     ->label('Тип сертификата'),
-                Select::make('sign_id')
-                    ->relationship('sign', 'name')
-                    ->createOptionForm([
-                        TextInput::make('name')
-                            ->maxLength(255)
-                            ->required()
-                            ->label('Наименование'),
-                    ])
-                    ->label('Признак сертификата'),
                 Select::make('chamber_id')
                     ->relationship('chamber', 'short_name')
                     ->searchable()
@@ -167,18 +158,27 @@ class CertificateResource extends Resource
                     ->numeric()
                     ->label('Дополнительные листы'),
                 self::formTagsField(),
+                Section::make([
+                        Section::make('Признаки')
+                            ->schema([
+                                Toggle::make('rec')
+                                    ->label('РЭЦ'),
+                                Toggle::make('second_invoice')
+                                    ->label('2с/ф')
+                            ])->columns((['md' => 1, 'lg' => 2])),
+                        Section::make('Счет')
+                            ->schema([
+                                Toggle::make('invoice_issued')
+                                    ->label('Выставлен'),
+                                Toggle::make('paid')
+                                    ->label('Оплачен')
+                            ])->columns((['md' => 1, 'lg' => 2])),
+                    ]),
                 FileUpload::make('scan_path')
                     ->directory('attachments')
                     ->openable()
                     ->acceptedFileTypes(['application/pdf'])
                     ->label('Скан сертификата'),
-                Section::make('Счет')
-                    ->schema([
-                        Toggle::make('invoice_issued')
-                            ->label('Выставлен'),
-                        Toggle::make('paid')
-                            ->label('Оплачен')
-                    ]),
             ]);
     }
 
@@ -213,12 +213,26 @@ class CertificateResource extends Resource
                     ->visible(in_array('certificate_type_short_name', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_type_short_name', $settings))// проверка на присутствие в настройках
                     ->label('тип сертификата'),
-                TextColumn::make('sign.name')
-                    ->sortable()
-                    ->visible(in_array('certificate_sign_name', $settings))// проверка на присутствие в настройках
-                    ->toggleable(in_array('certificate_sign_name', $settings))// проверка на присутствие в настройках
-                    ->searchable()
-                    ->label('признак'),
+                TextColumn::make('rec')
+                    ->label('признак РЭЦ')
+                    ->badge()
+                    ->visible(in_array('certificate_rec', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_rec', $settings))// проверка на присутствие в настройках
+                    ->getStateUsing(fn (Certificate $record): string => $record->rec ? 'РЭЦ' : '')
+                    ->colors([
+                        'success' => 'РЭЦ',
+                    ]),
+                IconColumn::make('second_invoice')
+                    ->label('признак 2с/ф')
+                    ->boolean()
+                    ->visible(in_array('certificate_second_invoice', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_second_invoice', $settings))// проверка на присутствие в настройках
+                    ->action(function($record, $column) {
+                        $name = $column->getName();
+                        $record->update([
+                            $name => !$record->$name
+                        ]);
+                    }),
                 TextColumn::make('chamber.short_name')
                     ->sortable()
                     ->visible(in_array('certificate_chamber_short_name', $settings))// проверка на присутствие в настройках
@@ -435,15 +449,19 @@ class CertificateResource extends Resource
                     ->toggle()
                     ->label('Счет оплачен')
                     ->query(fn (Builder $query): Builder => $query->where('paid', true)),
+                Filter::make('rec')
+                    ->toggle()
+                    ->label('Признак РЭЦ')
+                    ->query(fn (Builder $query): Builder => $query->where('rec', true)),
+                Filter::make('second_invoice')
+                    ->toggle()
+                    ->label('Признак 2с/ф')
+                    ->query(fn (Builder $query): Builder => $query->where('second_invoice', true)),
                 SelectFilter::make('type_id')
                     ->label('Тип сертификата')
                     ->multiple()
                     ->preload()
                     ->relationship('type', 'short_name'),
-                SelectFilter::make('sign_id')
-                    ->label('Признак сертификата')
-                    ->preload()
-                    ->relationship('sign', 'name'),
                 SelectFilter::make('chamber_id')
                     ->label('Палата')
                     ->multiple()
@@ -532,20 +550,8 @@ class CertificateResource extends Resource
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                    ExportBulkAction::make(),
+                    ExportBulkAction::make()->label('Экспорт выбранных записей'),
                     self::changeTagsAction(),
-/*                    BulkAction::make('updateDelivery')
-                        ->form([
-                            Select::make('delivery_id')
-                                ->label('Доставка')
-                                ->options(Delivery::query()->pluck('number', 'id'))
-                                ->required(),
-                        ])
-                        ->action(function (array $data, Collection $records):void {
-                            $records->each->delivery_id = $data['delivery_id'];
-                            dd($data['delivery_id']);
-                            $records->save();
-                        })*/
                 ]),
             ])
             ->headerActions([

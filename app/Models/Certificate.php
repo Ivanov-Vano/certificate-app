@@ -31,7 +31,9 @@ class Certificate extends Model
         'scan_path',
         'cost',
         'delivery_id',
-        'number'
+        'number',
+        'rec',
+        'second_invoice',
     ];
 
     public function chamber():BelongsTo
@@ -61,10 +63,6 @@ class Certificate extends Model
     public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class);
-    }
-    public function sign(): BelongsTo
-    {
-        return $this->belongsTo(Sign::class);
     }
     public function delivery(): BelongsTo
     {

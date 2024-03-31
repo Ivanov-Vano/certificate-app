@@ -36,7 +36,8 @@ class CertificateFactory extends Factory
             'scan_path' => $this->faker->sentence,
             'cost' => $this->faker->randomFloat(2, 1, 99999999),
             'number' => '2023/00'.$this->faker->numberBetween(10,99),
-            'sign_id' => Sign::all()->random()->id,
+            'rec' => $this->faker->boolean,
+            'second_invoice' => $this->faker->boolean,
         ];
     }
 }
