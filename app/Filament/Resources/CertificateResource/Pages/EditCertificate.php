@@ -6,6 +6,7 @@ use App\Filament\Resources\CertificateResource;
 use App\Models\Delivery;
 use App\Models\Deliveryman;
 use App\Models\Type;
+use Exception;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
@@ -79,27 +80,35 @@ class EditCertificate extends EditRecord
                 } else {
                     /** Если такой записи не существует, создаем ее */
                     // генерируем новый номер доставки. Формат номера: ХХХХ-YY
-                    $year = now()->format('y');
-                    $maxNumber = DB::table('deliveries')->max('number');
+                    $currentYear = now()->format('y');
+                    $maxNumber = DB::table('deliveries')
+                        ->where('number', 'LIKE', '%-'.$currentYear) // Убедимся, что номер соответствует текущему году
+                        ->max('number');
 
-                    // Если поле number пустое, присваиваем ему значение 1, иначе прибавляем к нему число 1
-                    $numberTemp = $maxNumber ?? '0001-'.$year;   //если пусто, то первый номер: 0001-YY
-                    $number = intval(substr($numberTemp, 0, strpos($numberTemp, '-'))) + 1;
-                    switch (strlen($number)) {
-                        case 1:
-                            $number = '000'.$number;
-                            break;
-                        case 2:
-                            $number = '00'.$number;
-                            break;
-                        case 3:
-                            $number = '0'.$number;
-                            break;
-                        case 4:
-                            $number = ''.$number;
-                            break;
+                    if (!is_null($maxNumber) && preg_match('/^d{4}-d{2}$/', $maxNumber)) {
+                        $numericPart = intval(substr($maxNumber, 0, 4)) + 1;
+                    } else {
+                        $numericPart = 1;
                     }
-                    $number = $number.'-'.$year;
+
+                    // Проверяем, не превышает ли номер максимально допустимое значение
+                    if ($numericPart > 9999) {
+                        // Начинаем нумерацию с 0001 следующего года
+                        $numericPart = 1;
+                        $year = str_pad($currentYear + 1, 2, '0', STR_PAD_LEFT); // Увеличиваем год
+                    } else {
+                        $year = $currentYear;
+                    }
+
+                    // Формируем новый номер с ведущими нулями
+                    $number = str_pad($numericPart, 4, '0', STR_PAD_LEFT) . '-' . $year;
+
+                    // Проверяем уникальность номера
+                    $exists = DB::table('deliveries')->where('number', $number)->exists();
+                    if ($exists) {
+                        // Логика обработки ситуации, когда номер уже существует
+                        throw new Exception("Генерируемый номер доставки уже присутствует в базе.");
+                    }
 
                     //получаем идентификатор курьер, если он один в базе
                     $count = Deliveryman::query()->count();
