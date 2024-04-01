@@ -66,19 +66,23 @@ class CreateCertificate extends CreateRecord
         // генерируем дату заявки
         $data['date'] = now();
 
-        // подставляем стоимость в зависимости от типа сертфиката
+        // подставляем стоимость в зависимости от типа сертификата
         $typeId = $data['type_id'];
-        $priceArr = Type::query()
-            ->select('price')
+        $price = Type::query()
+            ->select('price', 'price_chamber')
             ->whereKey($typeId)
-            ->pluck('price')
+            ->first()
             ->toArray();
-        $price = array_values($priceArr)[0];
+
+        $priceExpert = $price['price'];
+        $priceChamber = $price['price_chamber'];
+
         if ($user->hasRole(['Эксперт'])) {
             $data['expert_id'] = $user->expert->id;
         }
-        if ($data['scan_path'] !==null) {
-            $data['cost'] = $price;
+        if ($data['scan_path'] !==null) { //если есть скан, то подставляем стоимости
+            $data['cost'] = $priceExpert;
+            $data['cost_chamber'] = $priceChamber;
         }
         return $data;
     }

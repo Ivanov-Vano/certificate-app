@@ -40,7 +40,10 @@ class TypeResource extends Resource
                     ->label('Наименование')
                     ->maxLength(255),
                 TextInput::make('price')
-                    ->label('Цена')
+                    ->label('Цена эксперту')
+                    ->numeric(),
+                TextInput::make('price_chamber')
+                    ->label('Цена представителю палаты')
                     ->numeric(),
             ]);
     }
@@ -56,7 +59,10 @@ class TypeResource extends Resource
                     ->label('Наименование')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Цена')
+                    ->label('Цена эксперту')
+                    ->money('RUB'),
+                Tables\Columns\TextColumn::make('price_chamber')
+                    ->label('Цена представителю палаты')
                     ->money('RUB'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

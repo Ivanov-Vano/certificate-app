@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\CertificateResource\Pages;
 
 use App\Filament\Resources\CertificateResource;
-use App\Models\Certificate;
 use App\Models\Delivery;
 use App\Models\Deliveryman;
 use App\Models\Type;
@@ -34,17 +33,21 @@ class EditCertificate extends EditRecord
     }
     protected function mutateFormDataBeforeSave(array $data): array
     {
+
+        // подставляем стоимость в зависимости от типа сертификата
         $typeId = $data['type_id'];
-
-        $priceArr = Type::query()
-            ->select('price')
+        $price = Type::query()
+            ->select('price', 'price_chamber')
             ->whereKey($typeId)
-            ->pluck('price')
+            ->first()
             ->toArray();
-        $price = array_values($priceArr)[0];
 
-        if ($data['scan_path'] !==null) {
-            $data['cost'] = $price;
+        $priceExpert = $price['price'];
+        $priceChamber = $price['price_chamber'];
+
+        if ($data['scan_path'] !==null) { //если есть скан, то подставляем стоимости
+            $data['cost'] = $priceExpert;
+            $data['cost_chamber'] = $priceChamber;
         }
         return $data;
 

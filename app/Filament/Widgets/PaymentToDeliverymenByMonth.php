@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -15,11 +16,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PaymentToDeliverymenByMonth extends BaseWidget
 {
-    protected static ?int $sort = 6;
+    protected static ?int $sort = 7;
 
     protected int | string | array $columnSpan = 'full';
 
-    protected static ?string $heading = 'Статистика по курьерам за предыдущий месяц';
+    protected static ?string $heading = 'Статистика по курьерам за месяц';
 
     public function table(Table $table): Table
     {
@@ -40,6 +41,18 @@ class PaymentToDeliverymenByMonth extends BaseWidget
                     ->collapsible(),
             ])
             ->defaultGroup('deliveryman.full_name')
-            ->groupsOnly();
+            ->groupsOnly()
+            ->filters([
+                SelectFilter::make('month')
+                    ->label('месяц')
+                    ->options([
+                        Carbon::now()->month => 'текущий',
+                        Carbon::now()->subMonth()->month => 'предыдущий',
+                    ])
+                    ->default(Carbon::now()->month) // Установка фильтра по умолчанию за текущий месяц
+                    ->query(function ($query, $data) {
+                        $query->whereMonth('delivered_at', $data);
+                    }),
+            ]);
     }
 }

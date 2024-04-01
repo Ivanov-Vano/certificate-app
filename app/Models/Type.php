@@ -12,6 +12,7 @@ class Type extends Model
     protected $fillable =[
         'short_name',
         'name',
-        'price'
+        'price',
+        'price_chamber'
     ];
 }

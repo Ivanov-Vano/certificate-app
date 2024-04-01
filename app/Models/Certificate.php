@@ -30,6 +30,7 @@ class Certificate extends Model
         'sender_id',
         'scan_path',
         'cost',
+        'cost_chamber',
         'delivery_id',
         'number',
         'rec',
