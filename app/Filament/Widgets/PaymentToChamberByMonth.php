@@ -27,6 +27,11 @@ class PaymentToChamberByMonth extends BaseWidget
         return 'Статистика по палатам за ' . ($month == Carbon::now()->month ? 'текущий' : 'предыдущий');
     }
 
+    public static function canView():bool
+    {
+        return auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель', 'Представитель палаты']);
+    }
+
     public function table(Table $table): Table
     {
         $month = request()->query('month', Carbon::now()->month);
@@ -44,7 +49,7 @@ class PaymentToChamberByMonth extends BaseWidget
             ])
             ->groups([
                 Group::make('chamber.short_name')
-                    ->label('ФИО')
+                    ->label('Наименование')
                     ->collapsible(),
             ])
             ->defaultGroup('chamber.short_name')

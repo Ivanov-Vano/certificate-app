@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\CertificateResource;
 use App\Filament\Resources\DeliveryResource;
 use App\Models\Delivery;
 use Carbon\Carbon;
@@ -22,12 +23,23 @@ class PaymentToDeliverymenByMonth extends BaseWidget
 
     protected static ?string $heading = 'Статистика по курьерам за месяц';
 
+    public static function canView():bool
+    {
+        return auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель', 'Курьер']);
+    }
+
     public function table(Table $table): Table
     {
+        $month = request()->query('month', Carbon::now()->month);
+        $user = auth()->user();
+
         return $table
             ->query(
-                DeliveryResource::getEloquentQuery()
-                    ->whereMonth('delivered_at', ((Carbon::now()->month)-1))
+                CertificateResource::getEloquentQuery()
+                    ->when($user->role === 'Курьер', function ($query) use ($user) {
+                        return $query->whereBelongsTo($user->deliverman);
+                    })
+                    ->whereMonth('date', $month)
             )
             ->defaultSort('delivered_at', 'desc')
             ->columns([

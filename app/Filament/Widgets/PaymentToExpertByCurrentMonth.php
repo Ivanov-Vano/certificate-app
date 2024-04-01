@@ -22,13 +22,23 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
 
     protected static ?string $heading = 'Статистика по экспертам за месяц';
 
+    public static function canView():bool
+    {
+        return auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель', 'Эксперт']);
+    }
 
     public function table(Table $table): Table
     {
+        $month = request()->query('month', Carbon::now()->month);
+        $user = auth()->user();
+
         return $table
             ->query(
                 CertificateResource::getEloquentQuery()
-                ->whereMonth('date', ((Carbon::now()->month)-1))
+                    ->when($user->role === 'Эксперт', function ($query) use ($user) {
+                        return $query->whereBelongsTo($user->expert);
+                    })
+                    ->whereMonth('date', $month)
             )
 
             ->defaultPaginationPageOption(0)
@@ -42,9 +52,9 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
                     ->label('ФИО')
                     ->collapsible(),
             ])
-           ->defaultGroup('expert.full_name')
-           ->groupsOnly()
-           ->filters([
+            ->defaultGroup('expert.full_name')
+            ->groupsOnly()
+            ->filters([
                 SelectFilter::make('month')
                     ->label('месяц')
                     ->options([
@@ -55,6 +65,6 @@ class PaymentToExpertByCurrentMonth extends BaseWidget
                     ->query(function ($query, $data) {
                         $query->whereMonth('date', $data);
                     }),
-           ]);
+            ]);
     }
 }
