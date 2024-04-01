@@ -103,15 +103,6 @@ class CreateCertificate extends CreateRecord
                                 ->label('Полное наименование'),
                         ])
                         ->label('Тип сертификата'),
-                    Select::make('sign_id')
-                        ->relationship('sign', 'name')
-                        ->createOptionForm([
-                            TextInput::make('name')
-                                ->maxLength(255)
-                                ->required()
-                                ->label('Наименование'),
-                        ])
-                        ->label('Признак сертификата'),
                     Select::make('chamber_id')
                         ->relationship('chamber', 'short_name')
                         ->required()
@@ -125,6 +116,13 @@ class CreateCertificate extends CreateRecord
                                 ->label('Полное наименование'),
                         ])
                         ->label('Торгово-промышленная палата'),
+                    Section::make('Признаки')
+                        ->schema([
+                            Toggle::make('rec')
+                                ->label('РЭЦ'),
+                            Toggle::make('second_invoice')
+                                ->label('2с/ф')
+                        ])->columns((['md' => 1, 'lg' => 2])),
                 ]),
             Step::make('second')
                 ->label('второй шаг')
