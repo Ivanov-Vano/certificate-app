@@ -75,6 +75,13 @@ class OrganizationResource extends Resource
                                 ->numeric()
                                 ->suffix('руб')
                                 ->label('цена доставки'),
+                        ]),
+                    Section::make('Скидка')
+                        ->schema([
+                            TextInput::make('discount')
+                                ->numeric()
+                                ->suffix('руб')
+                                ->label('за вычетам с выплат по палатам'),
                         ])
                 ])
                     ->columnSpan(['lg' => 1]),

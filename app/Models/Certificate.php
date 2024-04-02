@@ -35,6 +35,8 @@ class Certificate extends Model
         'number',
         'rec',
         'second_invoice',
+        'transfer_document',
+        'agreement'
     ];
 
     public function chamber():BelongsTo

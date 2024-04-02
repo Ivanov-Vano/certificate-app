@@ -149,6 +149,10 @@ class CertificateResource extends Resource
                             ->label('Полное наименование'),
                     ])
                     ->label('Организация (куда)'),
+                TextInput::make('transfer_document')
+                    ->label('УПД'),
+                TextInput::make('agreement')
+                    ->label('Согласование'),
                 Select::make('expert_id')
                     ->relationship('expert', 'full_name')
                     ->required()
@@ -262,12 +266,24 @@ class CertificateResource extends Resource
                     ->visible(in_array('certificate_company_short_name', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_company_short_name', $settings))// проверка на присутствие в настройках
                     ->label('куда'),
+                TextColumn::make('transfer_document')
+                    ->sortable()
+                    ->searchable()
+                    ->visible(in_array('certificate_transfer_document', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_transfer_document', $settings))// проверка на присутствие в настройках
+                    ->label('УПД'),
                 TextColumn::make('company.country.short_name')
                     ->sortable()
                     ->searchable()
                     ->visible(in_array('certificate_company_country_short_name', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_company_country_short_name', $settings))// проверка на присутствие в настройках
                     ->label('страна получателя'),
+                TextColumn::make('agreement')
+                    ->sortable()
+                    ->searchable()
+                    ->visible(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
+                    ->toggleable(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
+                    ->label('Согласование'),
                 TextColumn::make('scan_path')
                     ->label('скан')
                     ->badge()
