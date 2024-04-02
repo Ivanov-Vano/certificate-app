@@ -13,7 +13,7 @@ class CertificateByExpertChart extends ChartWidget
 
     public static function canView(): bool
     {
-        if (auth()->user()->hasRole(['Эксперт'])) {
+        if (auth()->user()->hasAnyRole(['Эксперт', 'Представитель палаты', 'Курьер'])) {
             return false;
         } else {
             return true;

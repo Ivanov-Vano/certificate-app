@@ -13,6 +13,15 @@ class CertificatesChart extends ChartWidget
     protected static ?int $sort = 2;
     protected static ?string $heading = 'Общая статистика';
 
+    public static function canView(): bool
+    {
+        if (auth()->user()->hasAnyRole(['Представитель палаты', 'Курьер'])) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     protected function getData(): array
     {
         $data = $this->getCertificatesPerMonth();

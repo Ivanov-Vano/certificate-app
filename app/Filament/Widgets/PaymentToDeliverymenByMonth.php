@@ -30,16 +30,10 @@ class PaymentToDeliverymenByMonth extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $month = request()->query('month', Carbon::now()->month);
-        $user = auth()->user();
-
         return $table
             ->query(
-                CertificateResource::getEloquentQuery()
-                    ->when($user->role === 'Курьер', function ($query) use ($user) {
-                        return $query->whereBelongsTo($user->deliverman);
-                    })
-                    ->whereMonth('date', $month)
+                DeliveryResource::getEloquentQuery()
+                    ->whereMonth('delivered_at', ((Carbon::now()->month)-1))
             )
             ->defaultSort('delivered_at', 'desc')
             ->columns([
@@ -53,18 +47,6 @@ class PaymentToDeliverymenByMonth extends BaseWidget
                     ->collapsible(),
             ])
             ->defaultGroup('deliveryman.full_name')
-            ->groupsOnly()
-            ->filters([
-                SelectFilter::make('month')
-                    ->label('месяц')
-                    ->options([
-                        Carbon::now()->month => 'текущий',
-                        Carbon::now()->subMonth()->month => 'предыдущий',
-                    ])
-                    ->default(Carbon::now()->month) // Установка фильтра по умолчанию за текущий месяц
-                    ->query(function ($query, $data) {
-                        $query->whereMonth('delivered_at', $data);
-                    }),
-            ]);
+            ->groupsOnly();
     }
 }
