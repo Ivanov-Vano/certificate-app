@@ -283,7 +283,7 @@ class CertificateResource extends Resource
                     ->searchable()
                     ->visible(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
-                    ->label('Согласование'),
+                    ->label('согласование'),
                 TextColumn::make('scan_path')
                     ->label('скан')
                     ->badge()
@@ -508,6 +508,7 @@ class CertificateResource extends Resource
                 self::tagsFilter()
             ])
             ->groups([
+                Group::make('sender.short_name')->label('откуда'),
                 Group::make('type.short_name')->label('тип'),
                 Group::make('chamber.short_name')->label('палата'),
                 Group::make('date')
