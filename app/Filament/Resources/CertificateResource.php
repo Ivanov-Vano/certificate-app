@@ -388,10 +388,13 @@ class CertificateResource extends Resource
             ->filters([
                 Filter::make('date')
                     ->form([
-                        DatePicker::make('from')->label('с'),
+                        DatePicker::make('from')
+                            ->label('с'),
                         DatePicker::make('until')
                             ->label('по')/*
-                            ->default(now())*/,
+                    ->default(now())*/,
+                        Checkbox::make('today')
+                            ->label('сегодня'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
@@ -402,21 +405,31 @@ class CertificateResource extends Resource
                             ->when(
                                 $data['until'],
                                 fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            )
+                            // добавляем условие для фильтрации записей за сегодняшний день
+                            ->when(
+                                $data['today'] ?? false,
+                                fn (Builder $query): Builder => $query->whereDate('date', now()->toDateString()),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
 
                         if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('С ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('С ' . Carbon::parse($data['from'])->isoFormat('D MMMM YYYY'))
                                 ->removeField('from');
                         }
 
                         if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('по ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            $indicators[] = Indicator::make('по ' . Carbon::parse($data['until'])->isoFormat('D MMMM YYYY'))
                                 ->removeField('until');
                         }
 
+                        // Добавляем индикатор для фильтра "Сегодня"
+                        if ($data['today'] ?? false) {
+                            $indicators[] = Indicator::make('Сегодня ' . now()->isoFormat('D MMMM YYYY'))
+                                ->removeField('today');
+                        }
                         return $indicators;
                     }),
 
