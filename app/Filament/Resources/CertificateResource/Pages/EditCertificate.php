@@ -5,6 +5,7 @@ namespace App\Filament\Resources\CertificateResource\Pages;
 use App\Filament\Resources\CertificateResource;
 use App\Models\Delivery;
 use App\Models\Deliveryman;
+use App\Models\Organization;
 use App\Models\Type;
 use Exception;
 use Filament\Actions;
@@ -34,24 +35,43 @@ class EditCertificate extends EditRecord
     }
     protected function mutateFormDataBeforeSave(array $data): array
     {
-
-        // подставляем стоимость в зависимости от типа сертификата
-        $typeId = $data['type_id'];
-        $price = Type::query()
-            ->select('price', 'price_chamber')
-            ->whereKey($typeId)
-            ->first()
-            ->toArray();
-
-        $priceExpert = $price['price'];
-        $priceChamber = $price['price_chamber'];
-
         if ($data['scan_path'] !==null) { //если есть скан, то подставляем стоимости
+            // подставляем стоимость в зависимости от типа сертификата
+            $typeId = $data['type_id'];
+            $price = Type::query()
+                ->select('price', 'price_chamber')
+                ->whereKey($typeId)
+                ->first()
+                ->toArray();
+
+            // проверяем скидку
+            $payerId = $data['payer_id'];
+            $organizationDiscount = Organization::query()
+                ->select('discount')
+                ->whereKey($payerId)
+                ->first()
+                ->toArray();
+
+            $discount =  $organizationDiscount['discount'] ?? 0;// Если скидки нет, то используем 0
+            $priceExpert = $price['price'];
+            $priceChamber = $price['price_chamber'];
+
+            // производим расчет скидки при условии присутствия установленной цены за сертификат
+            if ($priceChamber !== null) {
+                if (is_numeric($priceChamber)) { //проверка, что переменная является числом
+                    if (is_numeric($discount)) { // проверка, что переменная является числом
+                        $priceChamber -= $discount; //вычитаем скидку из цены
+                    } else {
+                        $priceChamber = null;
+                    }
+                } else {
+                    $priceChamber = null;
+                }
+            }
             $data['cost'] = $priceExpert;
             $data['cost_chamber'] = $priceChamber;
         }
         return $data;
-
     }
 
     protected function afterSave(): void
