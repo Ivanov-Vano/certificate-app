@@ -43,35 +43,26 @@ class CreateCertificate extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $user = auth()->user();
-        $year = now()->format('Y');
+        $currentYear = now()->format('Y');
 
-        // генерируем новый номер заявки
-        // формат номера: 20ХХ/ХХХХ
-        $lastNumber = Certificate::query()->select('number')->orderBy('number')->get();
-        $last = $lastNumber->pluck('number')->last();
-        $last = $last ?? $year.'/0001';   //если пусто, то первый номер: 20ХХ/0001
-        $number = (substr($last,(strpos($last, '/')+1)) + 1);
-        switch (strlen($number)) {
-            case 1:
-                $number = '000'.$number;
-                break;
-            case 2:
-                $number = '00'.$number;
-                break;
-            case 3:
-                $number = '0'.$number;
-                break;
-            case 4:
-                $number = ''.$number;
-                break;
+        //получаем последний номер сертификата
+        $lastCertificate = Certificate::latest('id')->first();
+        $lastNumber = $lastCertificate ? $lastCertificate->number : "{$currentYear}/0000";
+        $newNumber = intval(substr($lastNumber, strrpos($lastNumber, '/') + 1)) + 1;
+        $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);//заполняем нулями слева до 4-х знаков
+        $newCertificateNumber = "{$currentYear}/{$formattedNumber}";
+
+        // убедимся, что номер уникален
+        while (Certificate::where('number', $newCertificateNumber)->exists()) {
+            $newNumber++;
+            $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);//заполняем нулями слева до 4-х знаков
+            $newCertificateNumber = "{$currentYear}/{$formattedNumber}";
         }
-        $number = $year.'/'.$number;
-        $data['number'] = $number;
 
-        // генерируем дату заявки
-        $data['date'] = now();
+        $data['number'] = $newCertificateNumber;
+        $data['date'] = now();// генерируем дату заявки
 
-        if ($user->hasRole(['Эксперт'])) {
+        if ($user->hasRole(['Эксперт'])) {//подставляем по умолчанию эксперта, который создал заявку на сертификат
             $data['expert_id'] = $user->expert->id;
         }
 
@@ -118,7 +109,7 @@ class CreateCertificate extends CreateRecord
         $record = $this->record;
 
         // Если scan_path стал пустым после изменения, отвязываем запись от Delivery, если delivered_at пустое
-        if ($record->scan_path !== '' && $record->delivery_id === null) {
+        if ($record->scan_path !== null && $record->delivery_id === null) {
             // Ищем запись Delivery, где organization_id равен payer_id текущей записи Certificate и delivered_at пустое
             $delivery = Delivery::where('organization_id', $record->payer_id)
                 ->whereNull('delivered_at')
@@ -292,6 +283,10 @@ class CreateCertificate extends CreateRecord
                         ->required()
                         ->hidden(auth()->user()->hasRole(['Эксперт']))
                         ->label('Эксперт ФИО'),
+                    TextInput::make('transfer_document')
+                        ->label('УПД'),
+                    TextInput::make('agreement')
+                        ->label('Согласование'),
                     TextInput::make('extended_page')
                         ->numeric()
                         ->label('Дополнительные листы'),

@@ -37,7 +37,7 @@ class CertificateFactory extends Factory
             'transfer_document' => $this->faker->sentence,
             'agreement' => $this->faker->sentence,
             'cost' => $this->faker->randomFloat(2, 1, 99999999),
-            'number' => '2023/00'.$this->faker->numberBetween(10,99),
+            'number' => '2024/00'.$this->faker->unique()->numberBetween(10,99),
             'rec' => $this->faker->boolean,
             'second_invoice' => $this->faker->boolean,
         ];

@@ -18,8 +18,11 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ForceDeleteBulkAction;
+use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -28,6 +31,7 @@ use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -72,7 +76,6 @@ class CertificateResource extends Resource
                     ->label('Дата'),
 
                 Select::make('type_id')
-                    ->autofocus()
                     ->relationship('type', 'short_name')
                     ->searchable()
                     ->preload()
@@ -230,13 +233,7 @@ class CertificateResource extends Resource
                     ->label('признак 2с/ф')
                     ->boolean()
                     ->visible(in_array('certificate_second_invoice', $settings))// проверка на присутствие в настройках
-                    ->toggleable(in_array('certificate_second_invoice', $settings))// проверка на присутствие в настройках
-                    ->action(function($record, $column) {
-                        $name = $column->getName();
-                        $record->update([
-                            $name => !$record->$name
-                        ]);
-                    }),
+                    ->toggleable(in_array('certificate_second_invoice', $settings)),// проверка на присутствие в настройках
                 TextColumn::make('chamber.short_name')
                     ->sortable()
                     ->visible(in_array('certificate_chamber_short_name', $settings))// проверка на присутствие в настройках
@@ -533,50 +530,40 @@ class CertificateResource extends Resource
             ])
             ->defaultGroup('date')
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ReplicateAction::make()
+                EditAction::make(),
+                ReplicateAction::make()
+                    // генерируем новый номер заявки
+                    // формат номера: 20ХХ/ХХХХ
+                    ->beforeReplicaSaved(function (Model $replica): Model {
+                        $currentYear = now()->format('Y');
+
+                        //получаем последний номер сертификата
+                        $lastCertificate = Certificate::latest('id')->first();
+                        $lastNumber = $lastCertificate ? $lastCertificate->number : "{$currentYear}/0000";
+                        $newNumber = intval(substr($lastNumber, strrpos($lastNumber, '/') + 1)) + 1;
+                        $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);//заполняем нулями слева до 4-х знаков
+                        $newCertificateNumber = "{$currentYear}/{$formattedNumber}";
+
+                        // убедимся, что номер уникален
+                        while (Certificate::where('number', $newCertificateNumber)->exists()) {
+                            $newNumber++;
+                            $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);//заполняем нулями слева до 4-х знаков
+                            $newCertificateNumber = "{$currentYear}/{$formattedNumber}";
+                        }
+                        $replica->number = $newCertificateNumber;
+                        $replica->date = now();// генерируем дату заявки
+
+                        return $replica;
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title('Копирование сертификата')
                             ->body('Заявка на сертификат была скопирована успешно!'),
-                    ),
-/*                    ->excludeAttributes(['number', 'date'])
-                    ->mutateRecordDataUsing(function (array $data): array {
-                        $user = auth()->user();
-                        $year = now()->format('Y');
-
-                        // генерируем новый номер заявки
-                        // формат номера: 20ХХ/ХХХХ
-                        $lastNumber = Certificate::query()->select('number')->orderBy('number')->get();
-                        $last = $lastNumber->pluck('number')->last();
-                        $last = $last ?? $year.'/0001';   //если пусто, то первый номер: 20ХХ/0001
-                        $number = (substr($last,(strpos($last, '/')+1)) + 1);
-                        switch (strlen($number)) {
-                            case 1:
-                                $number = '000'.$number;
-                                break;
-                            case 2:
-                                $number = '00'.$number;
-                                break;
-                            case 3:
-                                $number = '0'.$number;
-                                break;
-                            case 4:
-                                $number = ''.$number;
-                                break;
-                        }
-                        $number = $year.'/'.$number;
-                        $data['number'] = $number;
-
-                        // генерируем дату заявки
-                        $data['date'] = now();
-
-                        return $data;
-                    }),*/
+                    )
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+                BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
