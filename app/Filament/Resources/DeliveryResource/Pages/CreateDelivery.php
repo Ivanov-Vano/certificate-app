@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\DB;
 
 class CreateDelivery extends CreateRecord
 {
@@ -28,29 +29,32 @@ class CreateDelivery extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $user = auth()->user();
-        $year = now()->format('y');
 
-        // генерируем новый номер доставки
-        // формат номера: ХХХХ-YY
-        $lastNumber = Delivery::query()->select('number')->orderBy('number')->get();
-        $last = $lastNumber->pluck('number')->last();
-        $last = $last ?? '0001-'.$year;   //если пусто, то первый номер: 0001-YY
-        $number = (substr($last,0,(strpos($last, '-'))) + 1);
-        switch (strlen($number)) {
-            case 1:
-                $number = '000'.$number;
-                break;
-            case 2:
-                $number = '00'.$number;
-                break;
-            case 3:
-                $number = '0'.$number;
-                break;
-            case 4:
-                $number = ''.$number;
-                break;
+        // генерируем новый номер доставки. Формат номера: ХХХХ-YY
+        $currentYear = now()->format('y');
+        $maxNumber = DB::table('deliveries')
+            ->where('number', 'LIKE', '%-' . $currentYear) // Убедимся, что номер соответствует текущему году
+            ->max('number');
+
+
+        if (!is_null($maxNumber)) {
+            $numericPart = intval(substr($maxNumber, 0, 4)) + 1;
+        } else {
+            $numericPart = 1;
         }
-        $number = $number.'-'.$year;
+
+        // Проверяем, не превышает ли номер максимально допустимое значение
+        if ($numericPart > 9999) {
+            // Начинаем нумерацию с 0001 следующего года
+            $numericPart = 1;
+            $year = str_pad($currentYear + 1, 2, '0', STR_PAD_LEFT); // Увеличиваем год
+        } else {
+            $year = $currentYear;
+        }
+
+        // Формируем новый номер с ведущими нулями
+        $number = str_pad($numericPart, 4, '0', STR_PAD_LEFT) . '-' . $year;
+
         $data['number'] = $number;
 
         // генерируем дату подачи в доставку

@@ -127,11 +127,13 @@ class CreateCertificate extends CreateRecord
                     ->where('number', 'LIKE', '%-' . $currentYear) // Убедимся, что номер соответствует текущему году
                     ->max('number');
 
-                if (!is_null($maxNumber) && preg_match('/^d{4}-d{2}$/', $maxNumber)) {
+
+                if (!is_null($maxNumber)) {
                     $numericPart = intval(substr($maxNumber, 0, 4)) + 1;
                 } else {
                     $numericPart = 1;
                 }
+
 
                 // Проверяем, не превышает ли номер максимально допустимое значение
                 if ($numericPart > 9999) {
