@@ -45,9 +45,11 @@ class CreateCertificate extends CreateRecord
         $user = auth()->user();
         $currentYear = now()->format('Y');
 
-        //получаем последний номер сертификата
-        $lastCertificate = Certificate::latest('id')->first();
-        $lastNumber = $lastCertificate ? $lastCertificate->number : "{$currentYear}/0000";
+        //получаем последний номер сертификата. Формат номера YYYY/XXXX
+        $lastCertificate = DB::table('certificates')
+            ->where('number', 'LIKE', $currentYear . '/%') // Убедимся, что номер соответствует текущему году
+            ->max('number');
+        $lastNumber = $lastCertificate ? $lastCertificate : "{$currentYear}/0000";
         $newNumber = intval(substr($lastNumber, strrpos($lastNumber, '/') + 1)) + 1;
         $formattedNumber = str_pad($newNumber, 4, '0', STR_PAD_LEFT);//заполняем нулями слева до 4-х знаков
         $newCertificateNumber = "{$currentYear}/{$formattedNumber}";
