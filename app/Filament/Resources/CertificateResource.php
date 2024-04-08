@@ -208,7 +208,7 @@ class CertificateResource extends Resource
                     ->searchable()
                     ->visible(in_array('certificate_number', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_number', $settings))// проверка на присутствие в настройках
-                    ->label('номер заявки'),
+                    ->label('номер'),
                 TextColumn::make('date')
                     ->date('d.m.Y')
                     ->sortable()
@@ -220,9 +220,9 @@ class CertificateResource extends Resource
                     ->searchable()
                     ->visible(in_array('certificate_type_short_name', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_type_short_name', $settings))// проверка на присутствие в настройках
-                    ->label('тип сертификата'),
+                    ->label('тип серт-та'),
                 TextColumn::make('rec')
-                    ->label('признак РЭЦ')
+                    ->label('РЭЦ')
                     ->badge()
                     ->visible(in_array('certificate_rec', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_rec', $settings))// проверка на присутствие в настройках
@@ -231,7 +231,7 @@ class CertificateResource extends Resource
                         'success' => 'РЭЦ',
                     ]),
                 IconColumn::make('second_invoice')
-                    ->label('признак 2с/ф')
+                    ->label('2с/ф')
                     ->boolean()
                     ->visible(in_array('certificate_second_invoice', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_second_invoice', $settings)),// проверка на присутствие в настройках
@@ -281,7 +281,7 @@ class CertificateResource extends Resource
                     ->searchable()
                     ->visible(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
-                    ->label('согласование'),
+                    ->label('согл.'),
                 TextColumn::make('scan_path')
                     ->label('скан')
                     ->badge()
@@ -304,7 +304,7 @@ class CertificateResource extends Resource
                     })
                     ->label('эксперт'),
                 IconColumn::make('invoice_issued')
-                    ->label('счет выставлен')
+                    ->label('счет выставл.')
                     ->boolean()
                     ->visible(in_array('certificate_invoice_issued', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_invoice_issued', $settings))// проверка на присутствие в настройках
@@ -330,7 +330,7 @@ class CertificateResource extends Resource
                         ]);
                     }),
                 TextColumn::make('delivery_id')
-                    ->label('статус доставки')
+                    ->label('статус дост-ки')
                     ->badge()
                     ->visible(in_array('certificate_delivery_id', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_delivery_id', $settings))// проверка на присутствие в настройках
@@ -554,6 +554,8 @@ class CertificateResource extends Resource
                             $newCertificateNumber = "{$currentYear}/{$formattedNumber}";
                         }
                         $replica->transfer_document = null;
+                        $replica->invoice_issued = null;
+                        $replica->paid = null;
                         $replica->scan_path = null;
                         $replica->number = $newCertificateNumber;
                         $replica->date = now();// генерируем дату заявки

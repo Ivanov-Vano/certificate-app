@@ -16,7 +16,7 @@ trait HasTags
     public static function formTagsField() : Select
     {
         return self::tagsField()
-            ->label('Ключевые слова')
+            ->label('лючевые слова')
             ->relationship('tags', 'name');
     }
 
@@ -69,7 +69,7 @@ trait HasTags
     public static function tagsColumn() : TextColumn
     {
         return TextColumn::make('tags.name')
-            ->label('Ключевые слова')
+            ->label('ключевые слова')
             ->badge()
             ->separator(',')
             ->limit(3);
