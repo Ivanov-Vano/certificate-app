@@ -562,6 +562,9 @@ class CertificateResource extends Resource
 
                         return $replica;
                     })
+                    ->successRedirectUrl(fn (Model $replica): string => route('filament.admin.resources.certificates.edit', [
+                        'record' => $replica,
+                    ]))
                     ->successNotification(
                         Notification::make()
                             ->success()

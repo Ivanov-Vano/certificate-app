@@ -16,7 +16,7 @@ trait HasTags
     public static function formTagsField() : Select
     {
         return self::tagsField()
-            ->label('лючевые слова')
+            ->label('Ключевые слова')
             ->relationship('tags', 'name');
     }
 
