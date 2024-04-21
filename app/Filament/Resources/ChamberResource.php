@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Imports\ChamberImporter;
 use App\Filament\Resources\ChamberResource\Pages;
 use App\Filament\Resources\ChamberResource\RelationManagers;
 use App\Models\Chamber;
@@ -9,6 +10,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -79,12 +81,10 @@ class ChamberResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+            ->headerActions([
+                ImportAction::make()
+                    ->importer(ChamberImporter::class)
+            ]);    }
 
     public static function getRelations(): array
     {
