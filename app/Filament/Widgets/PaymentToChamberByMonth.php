@@ -34,12 +34,9 @@ class PaymentToChamberByMonth extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $month = request()->query('month', Carbon::now()->month);
-
         return $table
             ->query(
                 CertificateResource::getEloquentQuery()
-                    ->whereMonth('date', $month)
             )
             ->defaultPaginationPageOption(0)
             ->columns([

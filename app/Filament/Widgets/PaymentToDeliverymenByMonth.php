@@ -33,8 +33,7 @@ class PaymentToDeliverymenByMonth extends BaseWidget
         return $table
             ->query(
                 DeliveryResource::getEloquentQuery()
-                    ->whereMonth('delivered_at', ((Carbon::now()->month)-1))
-            )
+             )
             ->defaultSort('delivered_at', 'desc')
             ->columns([
                 TextColumn::make('cost')
@@ -47,6 +46,18 @@ class PaymentToDeliverymenByMonth extends BaseWidget
                     ->collapsible(),
             ])
             ->defaultGroup('deliveryman.full_name')
-            ->groupsOnly();
+            ->groupsOnly()
+            ->filters([
+                SelectFilter::make('month')
+                    ->label('месяц')
+                    ->options([
+                        Carbon::now()->startOfMonth()->month => 'текущий',
+                        Carbon::now()->subMonth()->startOfMonth()->month => 'предыдущий',
+                    ])
+                    ->default(Carbon::now()->startOfMonth()->month)
+                    ->query(function ($query, $data) {
+                        $query->whereMonth('delivered_at', $data);
+                    }),
+            ]);
     }
 }
