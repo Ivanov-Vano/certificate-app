@@ -40,8 +40,6 @@ class MailboxService
         foreach ($mailsIds as $mailId) {
             $mail = $this->mailbox->getMail($mailId);
             $contents[] = $this->getMailBody($mail);
-            // Пометить письмо как непрочитанное, если оно не от покупателя
-            $this->mailbox->markMailAsUnread($mailId);
         }
 
         return $contents;

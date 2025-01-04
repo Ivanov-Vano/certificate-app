@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Country;
+use App\Models\Lead;
+use App\Models\Type;
 use App\Services\MailboxService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -66,16 +69,41 @@ class ParseLeadEmails extends Command
 
 
         $number = isset($numberMatches[1]) ? $numberMatches[1] : null;
-        $type = isset($typeMatches[1]) ? $typeMatches[1] : null;
-        $country = isset($countryMatches[1]) ? $countryMatches[1] : null;
+        $typeName = isset($typeMatches[1]) ? $typeMatches[1] : null;
+        $countryName = isset($countryMatches[1]) ? $countryMatches[1] : null;
         $applicant = isset($applicantMatches[1]) ? $applicantMatches[1] : null;
         $phone = isset($phoneMatches[1]) ? $phoneMatches[1] : null;
         $email = isset($emailMatches[1]) ? $emailMatches[1] : null;
         $inn = isset($innMatches[1]) ? $innMatches[1] : null;
         $exporterName = isset($exporterNameMatches[1]) ? $exporterNameMatches[1] : null;
 
+        // Получение или создание страны
+        $country = Country::where('name', $countryName)->first();
+        if (!$country) {
+            $country = Country::create([
+                'name' => $countryName,
+                'short_name' => $countryName, // Присваиваем то же значение для short_name
+            ]);
+        }
+        // Получение или создание типа сертификата
+        $type = Type::firstOrCreate(['short_name' => $typeName]);
+
+        // Сохранение данных в модель Lead
+        Lead::updateOrCreate(
+            ['application_number' => $number],
+            [
+                'type_id' => $type->id,
+                'country_id' => $country->id,
+                'applicant' => $applicant,
+                'phone' => $phone,
+                'email' => $email,
+                'inn' => $inn,
+                'exporter_name' => $exporterName,
+            ]
+        );
+
         // Вывод извлеченных данных
-        $this->info("Parsed email:");
+/*        $this->info("Parsed email:");
         $this->info("Number: $number");
         $this->info("Type: $type");
         $this->info("Country: $country");
@@ -83,6 +111,6 @@ class ParseLeadEmails extends Command
         $this->info("Phone: $phone");
         $this->info("Email: $email");
         $this->info("INN: $inn");
-        $this->info("Exporter Name: $exporterName");
+        $this->info("Exporter Name: $exporterName");*/
     }
 }
