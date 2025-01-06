@@ -36,7 +36,6 @@ class ParseLeadEmails extends Command
         Log::channel('mailbox_import')->info('Импорт с почты запущен на папку: ' . $folder);
 
         $results = $mailboxService->getMessageBody();
-
         foreach ($results as $result) {
             $this->parseEmail($result);
         }
@@ -46,7 +45,7 @@ class ParseLeadEmails extends Command
 
     protected function parseEmail($content)
     {
-        // Регулярные выражения для извлечения данных
+/*        // Регулярные выражения для извлечения данных
         $numberPattern = '/СПТ № ([\w-]+)/';
         $typePattern = '/Тип СПТ: (.+)/';
         $countryPattern = '/Страна экспорта: (.+)/';
@@ -54,8 +53,21 @@ class ParseLeadEmails extends Command
         $phonePattern = '/Телефон заявителя: (.+)/';
         $emailPattern = '/Почта заявителя: (.+)/';
         $innPattern = '/ИНН экспортера: (.+)/';
-        $exporterNamePattern = '/Название экспортера: (.+)/';
+        $exporterNamePattern = '/Название экспортера: (.+)/';*/
 
+
+        // Удаление символов новой строки
+        $content = str_replace("\r\n", "", $content);
+
+        // Регулярные выражения для извлечения данных
+        $numberPattern = '/СПТ\s*№\s*([\w-]+)/';
+        $typePattern = '/Тип СПТ: (.+?)(?=Страна экспорта:|$)/';
+        $countryPattern = '/Страна экспорта: (.+?)(?=Заявитель:|$)/';
+        $applicantPattern = '/Заявитель: (.+?)(?=Телефон заявителя:|$)/';
+        $phonePattern = '/Телефон заявителя: (.+?)(?=Почта заявителя:|$)/';
+        $emailPattern = '/Почта заявителя: (.+?)(?=ИНН экспортера:|$)/';
+        $innPattern = '/ИНН экспортера: (.+?)(?=Название экспортера:|$)/';
+        $exporterNamePattern = '/Название экспортера: (.+?)(?=$)/';
 
         // Извлечение данных
         preg_match($numberPattern, $content, $numberMatches);
@@ -76,31 +88,46 @@ class ParseLeadEmails extends Command
         $email = isset($emailMatches[1]) ? $emailMatches[1] : null;
         $inn = isset($innMatches[1]) ? $innMatches[1] : null;
         $exporterName = isset($exporterNameMatches[1]) ? $exporterNameMatches[1] : null;
-
         // Получение или создание страны
-        $country = Country::where('name', $countryName)->first();
-        if (!$country) {
-            $country = Country::create([
-                'name' => $countryName,
-                'short_name' => $countryName, // Присваиваем то же значение для short_name
-            ]);
+        $country = null;
+        try {
+            $country = Country::query()
+                ->whereRaw("LOWER(name) = ?", [strtolower($countryName)])
+                ->orWhereRaw("LOWER(short_name) = ?", [strtolower($countryName)])
+                ->orWhere('alpha2', $countryName)
+                ->first();
+            if (!$country) {
+                $country = Country::create([
+                    'name' => $countryName,
+                    'short_name' => $countryName, // Присваиваем то же значение для short_name
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::channel('mailbox_import')->info('Ошибка добавления/обновления страны: ' . $e->getMessage());
         }
         // Получение или создание типа сертификата
-        $type = Type::firstOrCreate(['short_name' => $typeName]);
+        $type = null;
+        try {
+            $type = Type::firstOrCreate(['short_name' => $typeName]);
+        } catch (\Exception $e) {
+            Log::channel('mailbox_import')->info('Ошибка добавления/обновления типа СПТ: ' . $e->getMessage());
+        }
 
         // Сохранение данных в модель Lead
-        Lead::updateOrCreate(
-            ['application_number' => $number],
-            [
-                'type_id' => $type->id,
-                'country_id' => $country->id,
-                'applicant' => $applicant,
-                'phone' => $phone,
-                'email' => $email,
-                'inn' => $inn,
-                'exporter_name' => $exporterName,
-            ]
-        );
+        if ($country && $type)  {
+            Lead::updateOrCreate(
+                ['application_number' => $number],
+                [
+                    'type_id' => $type->id,
+                    'country_id' => $country->id,
+                    'applicant' => $applicant,
+                    'phone' => $phone,
+                    'email' => $email,
+                    'inn' => $inn,
+                    'exporter_name' => $exporterName,
+                ]
+            );
+        }
 
         // Вывод извлеченных данных
 /*        $this->info("Parsed email:");

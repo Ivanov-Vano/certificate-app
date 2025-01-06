@@ -126,6 +126,11 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'mailbox_import' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/mailbox.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

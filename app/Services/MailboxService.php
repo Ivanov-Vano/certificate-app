@@ -53,11 +53,6 @@ class MailboxService
             return $mail->textPlain;
         }
 
-        // Если текстового тела нет, возвращаем HTML-тело
-        if (!empty($mail->textHtml)) {
-            return $mail->textHtml;
-        }
-
         return '';
     }
 }

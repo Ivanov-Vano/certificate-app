@@ -53,13 +53,11 @@ class LeadResource extends Resource
                     ->relationship('type', 'short_name')
                     ->searchable()
                     ->preload()
-                    ->required()
                     ->label('Тип СПТ'),
                 Select::make('country_id')
-                    ->relationship('country', 'name')
+                    ->relationship('country', 'short_name')
                     ->searchable()
                     ->preload()
-                    ->required()
                     ->label('Страна экспорта'),
                 Fieldset::make('Заявитель')
                     ->schema([
