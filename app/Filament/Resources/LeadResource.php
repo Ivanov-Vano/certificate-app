@@ -3,29 +3,25 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\LeadResource\Pages;
-use App\Filament\Resources\LeadResource\RelationManagers;
 use App\Models\Lead;
 use Carbon\Carbon;
-use Filament\Forms;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LeadResource extends Resource
 {
@@ -38,6 +34,11 @@ class LeadResource extends Resource
     protected static ?string $modelLabel = 'лид';
     protected static ?string $pluralModelLabel = 'лиды';
     protected static ?int $navigationSort = 0;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return parent::getEloquentQuery()->count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -86,10 +87,6 @@ class LeadResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('application_number')
-                    ->sortable()
-                    ->searchable()
-                    ->label('заявка на выдачу СПТ'),
                 TextColumn::make('type.short_name')
                     ->sortable()
                     ->searchable()
@@ -98,6 +95,11 @@ class LeadResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('Страна экспорта'),
+                TextColumn::make('application_number')
+                    ->sortable()
+                    ->searchable()
+                    ->summarize(Count::make())
+                    ->label('заявка на выдачу СПТ'),
                 TextColumn::make('applicant')
                     ->sortable()
                     ->searchable()
@@ -116,7 +118,12 @@ class LeadResource extends Resource
                     ->label('ИНН экспортера'),
                 TextColumn::make('exporter_name')
                     ->sortable()
+                    ->words(3)
                     ->searchable()
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        return $state;
+                    })
                     ->label('Название экспортера'),
                 TextColumn::make('created_at')
                     ->label('создана запись')
@@ -168,6 +175,32 @@ class LeadResource extends Resource
                     ->preload()
                     ->relationship('country', 'short_name'),
             ])
+            ->groups([
+                Group::make('country.short_name')
+                    ->getDescriptionFromRecordUsing(fn (Lead $record): string => $record->country->name)
+                    ->collapsible()
+                    ->label('страна'),
+                Group::make('type.short_name')
+                    ->collapsible()
+                    ->label('тип'),
+                Group::make('inn')
+                    ->collapsible()
+                    ->label('ИНН'),
+                Group::make('applicant')
+                    ->collapsible()
+                    ->label('заявитель'),
+                Group::make('exporter_name')
+                    ->collapsible()
+                    ->label('экспортер'),
+                Group::make('created_at')
+                    // Настройка сортировки по умолчанию
+                    ->orderQueryUsing(
+                        fn(Builder $query, string $direction) => $query->orderBy('created_at', 'desc'))
+                    ->label('месяц')
+                    ->getTitleFromRecordUsing(fn (Lead $record): string => $record->created_at->format('m Y')),
+            ])
+//            ->defaultGroup('date')
+
             ->actions([
                 ViewAction::make(),
             ])
