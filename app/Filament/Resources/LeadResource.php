@@ -4,30 +4,26 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LeadResource\Pages;
 use App\Models\Lead;
-use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Select;
+use App\Filament\Resources\LeadResource\RelationManagers;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\Indicator;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class LeadResource extends Resource
 {
     protected static ?string $model = Lead::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-identification';
 
     protected static ?string $navigationGroup = 'Дополнительно';
     protected static ?string $navigationLabel = 'Потенциальные заказчики';
@@ -44,42 +40,36 @@ class LeadResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('application_number')
-                    ->label('Номер')
-                    ->hint('заявка на выдачу СПТ')
-                    ->unique(ignoreRecord: true)
-                    ->minLength(2)
-                    ->maxLength(255),
-                Select::make('type_id')
-                    ->relationship('type', 'short_name')
-                    ->searchable()
-                    ->preload()
-                    ->label('Тип СПТ'),
-                Select::make('country_id')
-                    ->relationship('country', 'short_name')
-                    ->searchable()
-                    ->preload()
-                    ->label('Страна экспорта'),
-                Fieldset::make('Заявитель')
-                    ->schema([
-                        TextInput::make('applicant')
-                            ->label('Наименование'),
-                        TextInput::make('phone')
-                            ->label('Телефон'),
-                        TextInput::make('email')
-                            ->label('Почта'),
-                    ]),
-                Fieldset::make('Экспортер')
-                    ->schema([
-                        TextInput::make('inn')
-                            ->label('ИНН'),
-                        TextInput::make('exporter_name')
-                            ->label('Название'),
-                    ]),
-                DateTimePicker::make('created_at')
-                    ->label('Дата создания')
-                    ->native(false)
-                    ->displayFormat('d.m.Y h:i')
+                TextInput::make('name')
+                    ->label('наименование')
+                    ->required(),
+                TagsInput::make('aliases')
+                    ->label('Алиасы')
+                    ->separator(','),
+                Textarea::make('note')
+                    ->label('Примечание'),
+                ToggleButtons::make('status')
+                    ->inline()
+                    ->label('Статус')
+                    ->options([
+                        'новый' => 'новый',
+                        'в работе' => 'в работе',
+                        'успех' => 'успех',
+                        'отказ' => 'отказ',
+                    ])
+                    ->colors([
+                        'новый' => 'info',
+                        'в работе' => 'primary',
+                        'успех' => 'success',
+                        'отказ' => 'danger',
+                    ])
+                    ->icons([
+                        'новый' => 'heroicon-m-sparkles',
+                        'в работе' => 'heroicon-m-chat-bubble-left-ellipsis',
+                        'успех' => 'heroicon-m-check-badge',
+                        'отказ' => 'heroicon-m-hand-thumb-down',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -87,122 +77,33 @@ class LeadResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('type.short_name')
+                TextColumn::make('name')
+                    ->label('наименование')
                     ->sortable()
-                    ->searchable()
-                    ->label('Тип СПТ'),
-                TextColumn::make('country.name')
-                    ->sortable()
-                    ->searchable()
-                    ->label('Страна экспорта'),
-                TextColumn::make('application_number')
-                    ->sortable()
-                    ->searchable()
-                    ->summarize(Count::make())
-                    ->label('заявка на выдачу СПТ'),
-                TextColumn::make('applicant')
-                    ->sortable()
-                    ->searchable()
-                    ->label('Заявитель'),
-                TextColumn::make('phone')
-                    ->sortable()
-                    ->searchable()
-                    ->label('Телефон заявителя'),
-                TextColumn::make('email')
-                    ->sortable()
-                    ->searchable()
-                    ->label('Почта заявителя:'),
-                TextColumn::make('inn')
-                    ->sortable()
-                    ->searchable()
-                    ->label('ИНН экспортера'),
-                TextColumn::make('exporter_name')
-                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('aliases')
+                    ->label('Алиасы')
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->label('статус')
+                    ->sortable(),
+                TextColumn::make('note')
+                    ->label('Комментарии')
                     ->words(3)
                     ->searchable()
                     ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return $state;
                     })
-                    ->label('Название экспортера'),
-                TextColumn::make('created_at')
-                    ->label('создана запись')
-                    ->dateTime('d.m.Y H:i:s')
-                    ->sortable()
             ])
-            ->filters([
-                Filter::make('created_at')
-                    ->form([
-                        DatePicker::make('from')->label('с'),
-                        DatePicker::make('until')
-                            ->label('по'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                            );
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('С ' . Carbon::parse($data['from'])->toFormattedDateString())
-                                ->removeField('from');
-                        }
-
-                        if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('по ' . Carbon::parse($data['until'])->toFormattedDateString())
-                                ->removeField('until');
-                        }
-
-                        return $indicators;
-                    }),
-
-                SelectFilter::make('type_id')
-                    ->label('Тип СПТ')
-                    ->multiple()
-                    ->preload()
-                    ->relationship('type', 'short_name'),
-                SelectFilter::make('country_id')
-                    ->label('Страна экспорта')
-                    ->multiple()
-                    ->preload()
-                    ->relationship('country', 'short_name'),
-            ])
-            ->groups([
-                Group::make('country.short_name')
-                    ->getDescriptionFromRecordUsing(fn (Lead $record): string => $record->country->name)
-                    ->collapsible()
-                    ->label('страна'),
-                Group::make('type.short_name')
-                    ->collapsible()
-                    ->label('тип'),
-                Group::make('inn')
-                    ->collapsible()
-                    ->label('ИНН'),
-                Group::make('applicant')
-                    ->collapsible()
-                    ->label('заявитель'),
-                Group::make('exporter_name')
-                    ->collapsible()
-                    ->label('экспортер'),
-                Group::make('created_at')
-                    // Настройка сортировки по умолчанию
-                    ->orderQueryUsing(
-                        fn(Builder $query, string $direction) => $query->orderBy('created_at', 'desc'))
-                    ->label('месяц')
-                    ->getTitleFromRecordUsing(fn (Lead $record): string => $record->created_at->format('m Y')),
-            ])
-//            ->defaultGroup('date')
 
             ->actions([
-                ViewAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -211,10 +112,21 @@ class LeadResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\ApplicationsRelationManager::make(),
+        ];
+    }
+
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageLeads::route('/'),
+            'index' => Pages\ListLeads::route('/'),
+            'create' => Pages\CreateLead::route('/create'),
+            'edit' => Pages\EditLead::route('/{record}/edit'),
+            'edit-status' => Pages\EditLeadStatus::route('/{record}/edit/status'),
         ];
     }
 }

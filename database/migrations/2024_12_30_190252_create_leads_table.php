@@ -13,18 +13,11 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            $table->string('application_number');
-            $table->unsignedBigInteger('country_id')->nullable();
-            $table->unsignedBigInteger('type_id')->nullable();
-            $table->string('applicant')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->string('inn')->nullable();
-            $table->string('exporter_name')->nullable();
+            $table->string('name')->unique();
+            $table->jsonb('aliases')->nullable();
+            $table->string('status')->default('новый');
+            $table->text('note')->comment('примечание')->nullable();
             $table->timestamps();
-
-            $table->foreign('country_id')->references('id')->on('countries')->onDelete('set null');
-            $table->foreign('type_id')->references('id')->on('types')->onDelete('set null');
         });
     }
 

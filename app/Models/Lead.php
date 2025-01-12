@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\LeadStatus;
 use Database\Factories\LeadFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lead extends Model
 {
@@ -13,23 +14,26 @@ class Lead extends Model
     use HasFactory;
 
     protected $fillable = [
-        'application_number',
-        'country_id',
-        'type_id',
-        'applicant',
-        'phone',
-        'email',
-        'inn',
-        'exporter_name'
+        'name',
+        'alias',
+        'status',
+        'note',
+
     ];
 
-    public function country(): BelongsTo
+    /**
+     * Перечисления статуса заказов
+     *
+     * @var class-string[]
+     */
+    protected $casts = [
+        'status' => LeadStatus::class,
+        'aliases' => 'array', // приведение поля aliases к типу array
+    ];
+
+    public function applications(): HasMany
     {
-        return $this->belongsTo(Country::class);
+        return $this->hasMany(Application::class);
     }
 
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(Type::class);
-    }
 }

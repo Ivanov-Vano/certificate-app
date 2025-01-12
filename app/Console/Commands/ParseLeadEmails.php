@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\LeadStatus;
+use App\Models\Application;
 use App\Models\Country;
 use App\Models\Lead;
 use App\Models\Type;
@@ -42,6 +44,24 @@ class ParseLeadEmails extends Command
 
         $this->info('Email parsing completed.');
     }
+
+    public static function getLeadId(string $leadName)
+    {
+        //приводим к нижнему регистру значение наименования заявителя
+        $lowercaseLeadName = mb_strtolower($leadName);
+        //найти заявителя по наименованию или алиасу
+        $lead = Lead::query()
+            ->whereRaw("LOWER(name) = ?", [$lowercaseLeadName])
+            ->orWhereJsonContains('aliases', $lowercaseLeadName)
+            ->first();
+        // если заявитель не найден, то создаем новый
+        $lead = $lead ?? Lead::create([
+            'name' => $leadName,
+            'status' => LeadStatus::New,
+        ]);
+        return $lead->id;
+    }
+
 
     protected function parseEmail($content)
     {
@@ -115,12 +135,12 @@ class ParseLeadEmails extends Command
 
         // Сохранение данных в модель Lead
         if ($country && $type)  {
-            Lead::updateOrCreate(
-                ['application_number' => $number],
+            Application::updateOrCreate(
+                ['number' => $number],
                 [
                     'type_id' => $type->id,
                     'country_id' => $country->id,
-                    'applicant' => $applicant,
+                    'lead_id' => self::getLeadId($applicant),
                     'phone' => $phone,
                     'email' => $email,
                     'inn' => $inn,
