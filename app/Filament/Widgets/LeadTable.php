@@ -27,6 +27,11 @@ class LeadTable extends BaseWidget
                 TextColumn::make('name')
                     ->label('наименование')
                     ->sortable()
+                    ->words(3)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        return $state;
+                    })
                     ->searchable(),
                 TextColumn::make('applications.phone')
                     ->label('Телефон')
