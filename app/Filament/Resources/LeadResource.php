@@ -18,6 +18,8 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class LeadResource extends Resource
 {
@@ -82,10 +84,17 @@ class LeadResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('aliases')
+                    ->visible(false)
                     ->label('Алиасы')
                     ->searchable(),
                 TextColumn::make('applications')
-                    //->sortable()TODO отдельный запрос сортировки
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query
+                            ->joinRelationship('applications')
+                            ->select('leads.*', DB::raw('COUNT(applications.id) as applications_count'))
+                            ->groupBy('leads.id')
+                            ->orderBy('applications_count', $direction);
+                    })
                     ->label('Кол-во заявок СПТ')
                     ->getStateUsing(fn (Lead $record): string => $record->applications()->count() ?? 0),
                 TextColumn::make('status')
