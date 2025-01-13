@@ -84,6 +84,10 @@ class LeadResource extends Resource
                 TextColumn::make('aliases')
                     ->label('Алиасы')
                     ->searchable(),
+                TextColumn::make('applications')
+                    //->sortable()TODO отдельный запрос сортировки
+                    ->label('Кол-во заявок СПТ')
+                    ->getStateUsing(fn (Lead $record): string => $record->applications()->count() ?? 0),
                 TextColumn::make('status')
                     ->badge()
                     ->label('статус')
