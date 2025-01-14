@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 
 class LeadTable extends BaseWidget
 {
@@ -80,6 +81,10 @@ class LeadTable extends BaseWidget
                     ->icon('heroicon-o-eye')
                     ->url(fn (Model $record): string => LeadResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab()
+            ])
+            ->headerActions([
+                ExportAction::make()->label('Экспорт'),
             ]);
+
     }
 }
