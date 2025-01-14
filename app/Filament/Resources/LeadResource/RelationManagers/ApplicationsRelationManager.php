@@ -87,21 +87,7 @@ class ApplicationsRelationManager extends RelationManager
                 TextColumn::make('created_at')
                     ->label('создана запись')
                     ->dateTime('d.m.Y H:i:s')
-                    ->sortable()            ])
-            ->filters([
-                //
-            ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make(),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    ->sortable()
             ]);
     }
 

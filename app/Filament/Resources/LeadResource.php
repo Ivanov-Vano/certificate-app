@@ -44,6 +44,8 @@ class LeadResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->label('наименование')
+                    ->readOnly()
+                    ->hint('только для чтения')
                     ->required(),
                 TagsInput::make('aliases')
                     ->label('Алиасы')
@@ -139,6 +141,7 @@ class LeadResource extends Resource
             'index' => Pages\ListLeads::route('/'),
             'create' => Pages\CreateLead::route('/create'),
             'edit' => Pages\EditLead::route('/{record}/edit'),
+            'view' => Pages\ViewLead::route('/{record}/view'),
             'edit-status' => Pages\EditLeadStatus::route('/{record}/edit/status'),
         ];
     }

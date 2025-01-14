@@ -2,11 +2,13 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\LeadResource;
 use App\Models\Lead;
-use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class LeadTable extends BaseWidget
@@ -46,21 +48,38 @@ class LeadTable extends BaseWidget
                         ->unique()
                         ->implode(', ')),
                 TextColumn::make('applications')
-                    ->sortable(query: function (Builder $query, string $direction): Builder {
-                        return $query
-                            ->joinRelationship('applications')
-                            ->select('leads.*', DB::raw('COUNT(applications.id) as applications_count'))
-                            ->groupBy('leads.id')
-                            ->orderBy('applications_count', $direction);
-                    })
                     ->label('Кол-во заявок СПТ')
                     ->getStateUsing(fn (Lead $record): string => $record->applications()->count() ?? 0),
+                TextColumn::make('applications_by_country')
+                    ->label('Из них по странам')
+                    ->getStateUsing(fn (Lead $record): string => $record->applications
+                        ->groupBy('country.short_name')
+                        ->map(fn ($group) => $group->count())
+                        ->sortByDesc(fn ($count) => $count)
+                        ->map(fn ($count, $country) => "$country - $count")
+                        ->implode('; ')
+                    ),
+                TextColumn::make('applications_by_type')
+                    ->label('Из них по типам')
+                    ->getStateUsing(fn (Lead $record): string => $record->applications
+                        ->groupBy('type.short_name')
+                        ->map(fn ($group) => $group->count())
+                        ->sortByDesc(fn ($count) => $count)
+                        ->map(fn ($count, $type) => "$type - $count")
+                        ->implode('; ')
+                    ),
                 TextColumn::make('status')
                     ->badge()
                     ->label('статус')
                     ->sortable(),
-
-
+            ])
+            ->actions([
+                Action::make('open')
+                    ->label('')
+                    ->tooltip('просмотр')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (Model $record): string => LeadResource::getUrl('view', ['record' => $record]))
+                    ->openUrlInNewTab()
             ]);
     }
 }
