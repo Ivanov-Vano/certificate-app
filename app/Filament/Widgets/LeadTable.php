@@ -36,18 +36,12 @@ class LeadTable extends BaseWidget
                         return $state;
                     })
                     ->searchable(),
-                TextColumn::make('applications.phone')
+                TextColumn::make('phones')
                     ->label('Телефон')
-                    ->getStateUsing(fn (Lead $record): string => $record->applications
-                        ->pluck('phone')
-                        ->unique()
-                        ->implode(', ')),
-                TextColumn::make('applications.email')
+                    ->getStateUsing(fn (Lead $record): string => $record->phones),
+                TextColumn::make('emails')
                     ->label('Электронная почта')
-                    ->getStateUsing(fn (Lead $record): string => $record->applications
-                        ->pluck('email')
-                        ->unique()
-                        ->implode(', ')),
+                    ->getStateUsing(fn (Lead $record): string => $record->emails),
                 TextColumn::make('applications')
                     ->label('Кол-во заявок СПТ')
                     ->getStateUsing(fn (Lead $record): string => $record->applications()->count() ?? 0),
@@ -74,6 +68,7 @@ class LeadTable extends BaseWidget
                     ->label('статус')
                     ->sortable(),
             ])
+            ->poll('60s')//задан интервал обновления списка заказов
             ->actions([
                 Action::make('open')
                     ->label('')

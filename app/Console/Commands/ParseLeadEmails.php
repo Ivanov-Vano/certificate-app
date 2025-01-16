@@ -133,7 +133,7 @@ class ParseLeadEmails extends Command
             Log::channel('mailbox_import')->info('Ошибка добавления/обновления типа СПТ: ' . $e->getMessage());
         }
 
-        // Сохранение данных в модель Lead
+        // Сохранение данных в модель Lead, обновляя данные по номеру заявки, а при отсутствии - добавляет
         if ($country && $type)  {
             Application::updateOrCreate(
                 ['number' => $number],

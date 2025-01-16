@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\LeadResource\RelationManagers;
 
+use App\Models\Application;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -11,6 +12,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Count;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -88,7 +90,17 @@ class ApplicationsRelationManager extends RelationManager
                     ->label('создана запись')
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
-            ]);
+            ])
+            ->groups([
+                Group::make('country.short_name')
+                    ->getDescriptionFromRecordUsing(fn (Application $record): string => $record->country->name)
+                    ->collapsible()
+                    ->label('страна'),
+                Group::make('type.short_name')
+                    ->collapsible()
+                    ->label('тип'),
+            ])
+            ->defaultGroup('country.short_name');
     }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string

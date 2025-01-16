@@ -36,4 +36,28 @@ class Lead extends Model
         return $this->hasMany(Application::class);
     }
 
+    /**
+     * Геттер для получения уникальных электронных адресов
+     *
+     * @return string
+     */
+    public function getEmailsAttribute(): string
+    {
+        return $this->applications
+            ->pluck('email')
+            ->unique()
+            ->implode('; ');
+    }
+    /**
+     * Геттер для получения уникальных телефонов
+     *
+     * @return string
+     */
+    public function getPhonesAttribute(): string
+    {
+        return $this->applications
+            ->pluck('phone')
+            ->unique()
+            ->implode('; ');
+    }
 }

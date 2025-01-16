@@ -29,11 +29,11 @@ class ApplicationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $navigationGroup = 'Дополнительно';
+    protected static ?string $navigationGroup = 'РЭЦ';
     protected static ?string $navigationLabel = 'заявки СПТ';
     protected static ?string $modelLabel = 'заявка';
     protected static ?string $pluralModelLabel = 'заявки';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationBadge(): ?string
     {
@@ -95,7 +95,7 @@ class ApplicationResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label('Тип СПТ'),
-                TextColumn::make('country.name')
+                TextColumn::make('country.short_name')
                     ->sortable()
                     ->searchable()
                     ->label('Страна экспорта'),
@@ -134,6 +134,7 @@ class ApplicationResource extends Resource
                     ->dateTime('d.m.Y H:i:s')
                     ->sortable()
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Filter::make('created_at')
                     ->form([

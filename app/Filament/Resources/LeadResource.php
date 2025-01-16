@@ -27,11 +27,11 @@ class LeadResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
 
-    protected static ?string $navigationGroup = 'Дополнительно';
+    protected static ?string $navigationGroup = 'РЭЦ';
     protected static ?string $navigationLabel = 'Потенциальные заказчики';
     protected static ?string $modelLabel = 'лид';
     protected static ?string $pluralModelLabel = 'лиды';
-    protected static ?int $navigationSort = 0;
+    protected static ?int $navigationSort = 1;
 
     public static function getNavigationBadge(): ?string
     {
@@ -74,6 +74,22 @@ class LeadResource extends Resource
                         'отказ' => 'heroicon-m-hand-thumb-down',
                     ])
                     ->required(),
+                TextInput::make('emails')
+                    ->label('Электронные адреса')
+                    ->disabled()
+                    ->afterStateHydrated(function (TextInput $component, $state, $record) {
+                        if ($record instanceof Lead) {
+                            $component->state($record->emails);
+                        }
+                    }),
+                TextInput::make('phones')
+                    ->label('Телефоны')
+                    ->disabled()
+                    ->afterStateHydrated(function (TextInput $component, $state, $record) {
+                        if ($record instanceof Lead) {
+                            $component->state($record->phones);
+                        }
+                    })
             ]);
     }
 

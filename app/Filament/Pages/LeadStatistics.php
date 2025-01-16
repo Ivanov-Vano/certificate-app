@@ -12,6 +12,10 @@ class LeadStatistics extends Page
 
     protected static ?string $title = 'Статистика по лидам';
 
+    protected static ?string $navigationGroup = 'РЭЦ';
+
+    protected static ?int $navigationSort = 0;
+
     protected static string $view = 'filament.pages.lead-statistics';
 
     protected function getHeaderWidgets(): array

@@ -43,6 +43,7 @@ class AdminPanelProvider extends PanelProvider
                 'Справочники',
                 'Система',
                 'Администрирование',
+                'РЭЦ',
             ])
             ->middleware([
                 EncryptCookies::class,
