@@ -2,8 +2,9 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\LeadOverview;
-use App\Filament\Widgets\LeadTable;
+use App\Filament\Resources\LeadResource\Widgets\LeadOverview;
+use App\Filament\Resources\LeadResource\Widgets\LeadPieChart;
+use App\Filament\Resources\LeadResource\Widgets\LeadTable;
 use Filament\Pages\Page;
 
 class LeadStatistics extends Page
@@ -22,6 +23,7 @@ class LeadStatistics extends Page
     {
         return [
             LeadOverview::class,
+            LeadPieChart::class,
             LeadTable::class
         ];
     }
