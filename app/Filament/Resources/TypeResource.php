@@ -6,6 +6,7 @@ use App\Filament\Resources\TypeResource\Pages;
 use App\Filament\Resources\TypeResource\RelationManagers;
 use App\Models\Type;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -31,11 +32,19 @@ class TypeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('short_name')
+                TextInput::make('short_name')
+                    ->label('Краткое наименование')
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->label('Наименование')
                     ->maxLength(255),
+                TextInput::make('price')
+                    ->label('Цена эксперту')
+                    ->numeric(),
+                TextInput::make('price_chamber')
+                    ->label('Цена представителю палаты')
+                    ->numeric(),
             ]);
     }
 
@@ -44,9 +53,17 @@ class TypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('short_name')
+                    ->label('Краткое наименование')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Наименование')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Цена эксперту')
+                    ->money('RUB'),
+                Tables\Columns\TextColumn::make('price_chamber')
+                    ->label('Цена представителю палаты')
+                    ->money('RUB'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

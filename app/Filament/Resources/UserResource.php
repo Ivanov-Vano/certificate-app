@@ -4,9 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
-use Filament\Forms;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,8 +14,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
@@ -38,7 +34,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('username')
+                TextInput::make('name')
                     ->required()
                     ->placeholder('Допустимы русские и английские символы')
                     ->label('Логин')
@@ -68,7 +64,15 @@ class UserResource extends Resource
                 Select::make('expert_id')
                     ->label('Эксперты')
                     ->preload()
-                    ->relationship('expert', 'full_name')
+                    ->relationship('expert', 'full_name'),
+                Select::make('deliveryman_id')
+                    ->label('Курьеры')
+                    ->preload()
+                    ->relationship('deliveryman', 'full_name'),//ToDo dependent
+                Select::make('chamber_id')
+                    ->label('Палаты')
+                    ->preload()
+                    ->relationship('chamber', 'short_name')
             ]);
     }
 
@@ -78,7 +82,11 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('expert.full_name')
                     ->label('Эксперт'),
-                TextColumn::make('username')
+                TextColumn::make('deliveryman.full_name')
+                    ->label('Курьер'),
+                TextColumn::make('chamber.short_name')
+                    ->label('Палата'),
+                TextColumn::make('name')
                     ->label('Имя пользователя'),
                 TextColumn::make('email'),
                 TextColumn::make('roles.name')

@@ -22,6 +22,9 @@ class OrganizationFactory extends Factory
             'inn' => $this->faker->numerify('##########'),
             'phone' => $this->faker->phoneNumber,
             'address' => $this->faker->address,
+            'additional_number' => $this->faker->numerify('##########'),
+            'delivery_price' => $this->faker->randomFloat(2, 1, 99999999),
+            'discount' => $this->faker->randomFloat(2, 1, 99999999),
         ];
     }
 }

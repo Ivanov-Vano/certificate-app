@@ -10,9 +10,9 @@ class Chamber extends Model
     use HasFactory;
 
     protected $fillable =[
-        'organization_id',
-        'full_name',
+        'short_name',
+        'name',
         'phone',
-        'email'
+        'address'
     ];
 }

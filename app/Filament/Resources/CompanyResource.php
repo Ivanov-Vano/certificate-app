@@ -7,6 +7,7 @@ use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -20,9 +21,9 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $modelLabel = 'компания';
+    protected static ?string $modelLabel = 'получатель';
 
-    protected static ?string $pluralModelLabel = 'компании';
+    protected static ?string $pluralModelLabel = 'получатели';
 
     protected static ?string $navigationGroup = 'Справочники';
 
@@ -35,16 +36,23 @@ class CompanyResource extends Resource
                 Select::make('country_id')
                     ->autofocus()
                     ->relationship('country', 'short_name')
+                    ->preload()
+                    ->searchable()
                     ->required()
                     ->label('Страна'),
-                Forms\Components\TextInput::make('short_name')
+                TextInput::make('short_name')
                     ->required()
+                    ->unique(ignoreRecord: true)
+                    ->label('Краткое наименование')
                     ->maxLength(100),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->label('Наименование')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('address')
+                TextInput::make('address')
+                    ->label('Адрес')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('registration_number')
+                TextInput::make('registration_number')
+                    ->label('Регистрационный номер')
                     ->maxLength(50),
             ]);
     }
@@ -55,14 +63,20 @@ class CompanyResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('country.short_name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Страна')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('short_name')
+                    ->label('Краткое наименование')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Наименование')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
+                    ->label('Адрес')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('registration_number')
+                    ->label('Регистрационный номер')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -74,7 +88,8 @@ class CompanyResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

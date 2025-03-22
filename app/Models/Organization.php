@@ -16,11 +16,13 @@ class Organization extends Model
         'name',
         'inn',
         'phone',
-        'address'
+        'address',
+        'additional_number',
+        'delivery_price',
+        'discount'
     ];
     public function clients():HasMany
     {
         return $this->hasMany(Client::class);
     }
-
 }

@@ -6,10 +6,12 @@ use App\Filament\Resources\ExpertResource\Pages;
 use App\Filament\Resources\ExpertResource\RelationManagers;
 use App\Models\Expert;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -32,21 +34,29 @@ class ExpertResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('surname')
-                    ->required()
-                    ->maxLength(255)
-                    ->autofocus()
-                    ->label('Фамилия'),
-                TextInput::make('name')
-                    ->required()
-                    ->label('Имя')
-                    ->maxLength(255),
-                TextInput::make('patronymic')
-                    ->label('Отчество')
-                    ->maxLength(255),
+                Section::make('ФИО')
+                    ->description('Заполните данные эксперта')
+                    ->schema([
+                        TextInput::make('surname')
+                            ->required()
+                            ->maxLength(255)
+                            ->autofocus()
+                            ->label('Фамилия'),
+                        TextInput::make('name')
+                            ->required()
+                            ->label('Имя')
+                            ->maxLength(255),
+                        TextInput::make('patronymic')
+                            ->label('Отчество')
+                            ->maxLength(255),
+                    ]),
                 TextInput::make('full_name')
                     ->required()
                     ->label('ФИО')
+                    ->maxLength(255),
+                TextInput::make('email')
+                    ->label('Почта')
+                    ->email()
                     ->maxLength(255),
             ]);
     }
@@ -55,7 +65,8 @@ class ExpertResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('full_name')->sortable()->label('ФИО'),
+                TextColumn::make('full_name')->sortable()->label('ФИО'),
+                TextColumn::make('email')->label('Почта'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

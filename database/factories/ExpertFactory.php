@@ -26,6 +26,7 @@ class ExpertFactory extends Factory
             'name' => $name,
             'patronymic' => $patronymic,
             'full_name' => $surname.' '.$name.' '.$patronymic,
+            'email' => fake()->email,
         ];
     }
 }

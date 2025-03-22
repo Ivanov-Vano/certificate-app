@@ -13,7 +13,7 @@ class ExpertPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('просмотр всех: эксперт');
     }
 
     /**
@@ -21,7 +21,7 @@ class ExpertPolicy
      */
     public function view(User $user, Expert $expert): bool
     {
-        return true;
+        return $user->hasPermissionTo('просмотр: эксперт');
     }
 
     /**
@@ -29,7 +29,7 @@ class ExpertPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->hasPermissionTo('создание: эксперт');
     }
 
     /**
@@ -37,7 +37,7 @@ class ExpertPolicy
      */
     public function update(User $user, Expert $expert): bool
     {
-        return true;
+        return $user->hasPermissionTo('изменение: эксперт');
     }
 
     /**
@@ -45,7 +45,7 @@ class ExpertPolicy
      */
     public function delete(User $user, Expert $expert): bool
     {
-        return true;
+        return $user->hasPermissionTo('удаление: эксперт');
     }
 
     /**
@@ -53,7 +53,7 @@ class ExpertPolicy
      */
     public function restore(User $user, Expert $expert): bool
     {
-        return true;
+        return $user->hasPermissionTo('восстановление: эксперт');
     }
 
     /**
@@ -61,6 +61,6 @@ class ExpertPolicy
      */
     public function forceDelete(User $user, Expert $expert): bool
     {
-        return true;
+        return $user->hasPermissionTo('безвозвратное удаление: эксперт');
     }
 }
