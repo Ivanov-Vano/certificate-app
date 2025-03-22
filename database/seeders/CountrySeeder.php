@@ -19,7 +19,6 @@ class CountrySeeder extends Seeder
             Country::updateOrCreate(['short_name' => $country['short_name']],
                 [
                     'short_name' => $country['short_name'],
-                    'name' => 'fdfdfdf',
                 ]
             );
         }

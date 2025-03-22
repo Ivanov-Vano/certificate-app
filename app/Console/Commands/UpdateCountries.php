@@ -70,5 +70,6 @@ class UpdateCountries extends Command
         } catch (\Exception $e) {
             Log::error('Ошибка при обновлении стран: ' . $e->getMessage());
             $this->error('Произошла ошибка: ' . $e->getMessage());
-        }    }
+        }
+    }
 }

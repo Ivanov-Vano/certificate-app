@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Delivery;
 use App\Models\Expert;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
@@ -19,7 +18,7 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        // reset cached roles and permissions (сбросить кешированные роли и разрешения)
+        // сбрасываем кешированные роли и разрешения
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         //Misc (пустышка)
@@ -360,6 +359,5 @@ class RolesAndPermissionsSeeder extends Seeder
                 //  'deliveryman_id' => Delivery::all()->random()->id,
             ])->assignRole($chamberRole);
         }
-
     }
 }

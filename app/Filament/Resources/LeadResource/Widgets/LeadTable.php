@@ -79,6 +79,5 @@ class LeadTable extends BaseWidget
             ->headerActions([
                 ExportAction::make()->label('Экспорт'),
             ]);
-
     }
 }
