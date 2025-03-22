@@ -5,8 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\Certificate;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Flowframe\Trend\Trend;
-use Flowframe\Trend\TrendValue;
 
 class CertificatesChart extends ChartWidget
 {
@@ -41,26 +39,36 @@ class CertificatesChart extends ChartWidget
         return 'bar';
     }
 
-    private function getCertificatesPerMonth():array
+    private function getCertificatesPerMonth(): array
     {
-
         $now = Carbon::now();
+        $months = [];
+        $certificatesPerMonth = [];
 
-        $months = ['Янв','Фев','Мар','Апр','Май','Июнь','Июль','Авг','Сен','Окт','Ноя','Дек'];
+        for ($i = 0; $i < 12; $i++) {
+            $currentMonth = $now->copy()->subMonths($i);
+            $monthName = $currentMonth->format('m.Y');
+            $months[] = $monthName;
 
-
-        $certificatesPerMonth = collect(range(1,12))->map(function ($month) use($now) {
             if (auth()->user()->hasAnyRole(['Администратор', 'Суперпользователь', 'Руководитель'])) {
-                return Certificate::query()
-                    ->whereMonth('date', Carbon::parse($now->month($month)
-                        ->format('Y-m')))->count();
+                $count = Certificate::query()
+                    ->whereMonth('date', $currentMonth->format('m'))
+                    ->whereYear('date', $currentMonth->format('Y'))
+                    ->count();
+            } else {
+                $count = Certificate::query()
+                    ->whereBelongsTo(auth()->user()->expert)
+                    ->whereMonth('date', $currentMonth->format('m'))
+                    ->whereYear('date', $currentMonth->format('Y'))
+                    ->count();
             }
-            return Certificate::query()
-                ->whereBelongsTo(auth()->user()->expert)
-                ->whereMonth('date', Carbon::parse($now->month($month)
-                    ->format('Y-m')))->count();
 
-        })->toArray();
+            $certificatesPerMonth[] = $count;
+        }
+
+        // Перевернем массивы, чтобы получить правильный хронологический порядок.
+        $months = array_reverse($months);
+        $certificatesPerMonth = array_reverse($certificatesPerMonth);
 
         return [
             'certificatesPerMonth' => $certificatesPerMonth,
