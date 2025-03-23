@@ -286,7 +286,7 @@ class CertificateResource extends Resource
                     ->sortable()
                     ->visible(in_array('certificate_extended_page', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_extended_page', $settings))// проверка на присутствие в настройках
-                    ->label('Доп. листы'),
+                    ->label('доп. листы'),
                 TextColumn::make('scan_path')
                     ->label('скан')
                     ->badge()
