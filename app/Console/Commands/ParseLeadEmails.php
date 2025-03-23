@@ -65,17 +65,6 @@ class ParseLeadEmails extends Command
 
     protected function parseEmail($content)
     {
-/*        // Регулярные выражения для извлечения данных
-        $numberPattern = '/СПТ № ([\w-]+)/';
-        $typePattern = '/Тип СПТ: (.+)/';
-        $countryPattern = '/Страна экспорта: (.+)/';
-        $applicantPattern = '/Заявитель: (.+)/';
-        $phonePattern = '/Телефон заявителя: (.+)/';
-        $emailPattern = '/Почта заявителя: (.+)/';
-        $innPattern = '/ИНН экспортера: (.+)/';
-        $exporterNamePattern = '/Название экспортера: (.+)/';*/
-
-
         // Удаление символов новой строки
         $content = str_replace("\r\n", "", $content);
 
@@ -86,8 +75,8 @@ class ParseLeadEmails extends Command
         $applicantPattern = '/Заявитель: (.+?)(?=Телефон заявителя:|$)/';
         $phonePattern = '/Телефон заявителя: (.+?)(?=Почта заявителя:|$)/';
         $emailPattern = '/Почта заявителя: (.+?)(?=ИНН экспортера:|$)/';
-        $innPattern = '/ИНН экспортера: (.+?)(?=Название экспортера:|$)/';
-        $exporterNamePattern = '/Название экспортера: (.+?)(?=$)/';
+        $innPattern = '/ИНН экспортера: (.+?)(?=ОГРН экспортера:|$)/';
+        $exporterNamePattern = '/Название экспортера: (.+?)(?=ИНН заявителя:|$)/';
 
         // Извлечение данных
         preg_match($numberPattern, $content, $numberMatches);
