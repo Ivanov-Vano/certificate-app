@@ -56,6 +56,7 @@ class SettingResource extends Resource
                                         'certificate_transfer_document' => 'УПД',
                                         'certificate_company_country_short_name' => 'страна получателя',
                                         'certificate_agreement' => 'согласование',
+                                        'certificate_extended_page' => 'доп. листы',
                                         'certificate_scan_path' => 'скан',
                                         'certificate_expert_full_name' => 'эксперт',
                                         'certificate_invoice_issued' => 'счет выставлен',
