@@ -43,6 +43,7 @@ class ParseLeadEmails extends Command
         }
 
         $this->info('Email parsing completed.');
+        Log::channel('mailbox_import')->info('Импорт с почты успешно завершен');
     }
 
     public static function getLeadId(string $leadName)

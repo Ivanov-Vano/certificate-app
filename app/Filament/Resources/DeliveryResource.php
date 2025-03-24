@@ -123,7 +123,7 @@ class DeliveryResource extends Resource
                 TextColumn::make('organization.short_name')
                     ->sortable()
                     ->searchable()
-                    ->description(fn (Delivery $record): string => $record->organization->address)
+                    ->description(fn (Delivery $record): string => $record->organization->address ?? '')
                     ->visible(in_array('delivery_organization_short_name', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('delivery_organization_short_name', $settings))// проверка на присутствие в настройках
                     ->label('получатель'),
