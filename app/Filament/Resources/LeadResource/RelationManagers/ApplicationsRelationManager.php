@@ -93,7 +93,7 @@ class ApplicationsRelationManager extends RelationManager
             ])
             ->groups([
                 Group::make('country.short_name')
-                    ->getDescriptionFromRecordUsing(fn (Application $record): string => $record->country->name)
+                    ->getDescriptionFromRecordUsing(fn (Application $record): string => $record->country->name ?? '')
                     ->collapsible()
                     ->label('страна'),
                 Group::make('type.short_name')
