@@ -80,14 +80,13 @@ class EditCertificate extends EditRecord
 
         // Получаем все изменения, внесенные в запись
         $changes = $record->getChanges();
-
         // Проверяем, что scan_path был изменен и не пустое, а delivery_id пустое
-        if (array_key_exists('scan_path', $changes) && isset($changes['scan_path'][1]) && $changes['scan_path'][1] !== null && $record->delivery_id === null) {
+        if (array_key_exists('scan_path', $changes) && isset($changes['scan_path']) && $changes['scan_path'] !== null && $record->delivery_id === null) {
             // Если scan_path стал пустым после изменения, отвязываем запись от Delivery, если delivered_at пустое
-            if ($changes['scan_path'][1] === '' && !empty($record->delivery_id) && $record->delivery->delivered_at === null) {
+            if ($changes['scan_path'] === '' && !empty($record->delivery_id) && $record->delivery->delivered_at === null) {
                 $record->delivery()->dissociate();
                 $record->save();
-            } elseif ($changes['scan_path'][1] !== '' && $record->delivery_id === null) {
+            } elseif ($changes['scan_path'] !== '' && $record->delivery_id === null) {
                 // Ищем запись Delivery, где organization_id равен payer_id текущей записи Certificate и delivered_at пустое
                 $delivery = Delivery::where('organization_id', $record->payer_id)
                     ->whereNull('delivered_at')
@@ -98,14 +97,14 @@ class EditCertificate extends EditRecord
                     $record->delivery()->associate($delivery);
                     $record->save();
                 } else {
-                    /** Если такой записи не существует, создаем ее */
-                    // генерируем новый номер доставки. Формат номера: ХХХХ-YY
+                    /** Если такой записи не существует, создаем ее
+                     генерируем новый номер доставки. Формат номера: ХХХХ-YY */
                     $currentYear = now()->format('y');
                     $maxNumber = DB::table('deliveries')
                         ->where('number', 'LIKE', '%-'.$currentYear) // Убедимся, что номер соответствует текущему году
                         ->max('number');
 
-                    if (!is_null($maxNumber) && preg_match('/^d{4}-d{2}$/', $maxNumber)) {
+                    if (!is_null($maxNumber) && preg_match('/^\d{4}-\d{2}$/', $maxNumber)) {
                         $numericPart = intval(substr($maxNumber, 0, 4)) + 1;
                     } else {
                         $numericPart = 1;
@@ -115,7 +114,7 @@ class EditCertificate extends EditRecord
                     if ($numericPart > 9999) {
                         // Начинаем нумерацию с 0001 следующего года
                         $numericPart = 1;
-                        $year = str_pad($currentYear + 1, 2, '0', STR_PAD_LEFT); // Увеличиваем год
+                        $year = str_pad((int)$currentYear + 1, 2, '0', STR_PAD_LEFT); // Увеличиваем год
                     } else {
                         $year = $currentYear;
                     }
@@ -124,10 +123,14 @@ class EditCertificate extends EditRecord
                     $number = str_pad($numericPart, 4, '0', STR_PAD_LEFT) . '-' . $year;
 
                     // Проверяем уникальность номера
-                    $exists = DB::table('deliveries')->where('number', $number)->exists();
-                    if ($exists) {
-                        // Логика обработки ситуации, когда номер уже существует
-                        throw new Exception("Генерируемый номер доставки уже присутствует в базе.");
+                    while (DB::table('deliveries')->where('number', $number)->exists()) {
+                        // Увеличиваем номер, если он уже существует
+                        $numericPart++;
+                        if ($numericPart > 9999) {
+                            $numericPart = 1;
+                            $year = str_pad((int)$currentYear + 1, 2, '0', STR_PAD_LEFT); // Увеличиваем год
+                        }
+                        $number = str_pad($numericPart, 4, '0', STR_PAD_LEFT) . '-' . $year;
                     }
 
                     //получаем идентификатор курьер, если он один в базе

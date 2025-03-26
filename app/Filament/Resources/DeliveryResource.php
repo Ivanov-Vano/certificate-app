@@ -183,6 +183,7 @@ class DeliveryResource extends Resource
                     ->visible(in_array('certificate_number', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_number', $settings)),
             ])
+            ->defaultSort('accepted_at', 'desc')
             ->groups([
                 Group::make('organization.short_name')->label('получатель'),
                 Group::make('deliveryman.full_name')->label('курьер'),
