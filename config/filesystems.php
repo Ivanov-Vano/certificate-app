@@ -42,6 +42,8 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
+	            // Запрещаем загрузку PHP-файлов
+            'deny_php' => true,
         ],
 
         's3' => [
