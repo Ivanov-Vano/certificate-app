@@ -40,6 +40,9 @@ RUN docker-php-ext-configure intl && \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Копируем кастомный php.ini
+COPY php.ini /usr/local/etc/php/conf.d/99-custom.ini
+
 RUN groupadd --force -g $WWWGROUP sail && \
     useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER sail
 
