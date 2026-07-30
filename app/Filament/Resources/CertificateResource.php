@@ -156,7 +156,7 @@ class CertificateResource extends Resource
                 TextInput::make('transfer_document')
                     ->label('УПД'),
                 TextInput::make('agreement')
-                    ->label('Согласование'),
+                    ->label('Комментарии'),
                 Select::make('expert_id')
                     ->relationship('expert', 'full_name')
                     ->required()
@@ -281,7 +281,7 @@ class CertificateResource extends Resource
                     ->searchable()
                     ->visible(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
                     ->toggleable(in_array('certificate_agreement', $settings))// проверка на присутствие в настройках
-                    ->label('согл.'),
+                    ->label('комм-ии'),
                 TextColumn::make('extended_page')
                     ->sortable()
                     ->visible(in_array('certificate_extended_page', $settings))// проверка на присутствие в настройках
